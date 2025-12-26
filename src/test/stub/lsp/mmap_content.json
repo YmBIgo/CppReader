@@ -1,9 +1,0 @@
-[
-    {
-        "line": 722,
-        "character": 0,
-        "functionName": "arch_get_unmapped_area",
-        "firstLine": "\treturn arch_get_unmapped_area(filp, addr, len, pgoff, flags, vm_flags);",
-        "content": "unsigned long\narch_get_unmapped_area(struct file *filp, unsigned long addr,\n\t\t       unsigned long len, unsigned long pgoff,\n\t\t       unsigned long flags, vm_flags_t vm_flags)\n{\n\treturn generic_get_unmapped_area(filp, addr, len, pgoff, flags,\n\t\t\t\t\t vm_flags);\n}"
-    }
-]

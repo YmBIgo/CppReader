@@ -53,7 +53,7 @@ class ClangdLanguageClient extends vscodelc.LanguageClient {
   }
 }
 
-export const clangdDocumentSelector = [{ scheme: "file", language: "c" }];
+export const clangdDocumentSelector = [{ scheme: "file", language: "cpp" }];
 
 export class LinuxReader {
   private apiHandler: LLMModel | null;
@@ -150,7 +150,12 @@ export class LinuxReader {
   ) {
     const clangd: vscodelc.Executable = {
       command: clangdPath,
-      args: [`--compile-commands-dir=${compileCommand}`, "--background-index"],
+      args: [
+        `--compile-commands-dir=${compileCommand}`,
+        "--background-index",
+        "--log=verbose",
+        "--query-driver=/usr/bin/c++,user/bin/g++",
+      ],
       options: {
         cwd: linuxPath,
         shell: true,
@@ -175,7 +180,7 @@ export class LinuxReader {
         });
     } else {
       client = new ClangdLanguageClient(
-        `Linux Reader`,
+        `Cpp Reader`,
         serverOptions,
         clientOptions
       );
@@ -855,7 +860,7 @@ ${description.ask ? description.ask : "not provided..."}
     await client?.sendNotification("textDocument/didOpen", {
       textDocument: {
         uri: addFilePrefixToFilePath(filePath),
-        languageId: "c",
+        languageId: "cpp",
         version: 0,
         text: fileContent,
       },
@@ -889,7 +894,7 @@ ${description.ask ? description.ask : "not provided..."}
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
         uri: addFilePrefixToFilePath(filePath),
-        languageId: "c",
+        languageId: "cpp",
         version: 0,
         text: fileContent,
       },

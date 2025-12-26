@@ -1,5 +1,5 @@
-## Linux Reader とは？
-Linux Reader とは、LLMと一緒にLinuxのコードを読むためのツールです。
+## Cpp Reader とは？
+Cpp Reader とは、LLMと一緒にCppのコードを読むためのツールです。
 
 [\[LinuxReaderデモ\](https://youtu.be/jT_mHFuKsdQ)](https://youtu.be/jT_mHFuKsdQ)
 
@@ -17,9 +17,9 @@ Linux Readerを使うときは、BuiltinでないC/C++のVSCode拡張はdisable�
 - 調べた関数経路をJSONで保存・再現できる
 
 #### [効果]
-- Linuxコードをランダムウォークなしに読み進められる
+- Cppコードをランダムウォークなしに読み進められる
 - 土地勘がないと10分以上かかる数百行、数千行の関数のコードリーディングを、LLMが1分で終わらせてくれる
-- Linuxコードのバグを見つけられる機能がある
+- Cppコードのバグを見つけられる機能がある
 - 頭にいれるだけで暗黙知になりがちな関数経路や関数の説明をLLMがしてくれる
 - 従来は頭にしか入っていなかったコードという暗黙知が形式知にできる
 
@@ -29,13 +29,13 @@ Linux Readerを使うときは、BuiltinでないC/C++のVSCode拡張はdisable�
 - コードベースを分割せず一括でLLMに調べさせること
 
 #### 用意するもの
-clangd(14系以上), Linuxのコード, Linuxのcompile_commands.json, vscode(1.100.0以上)  
+clangd(14系以上), Cppのコード, Cppのcompile_commands.json, vscode(1.100.0以上)  
 OpenAIかAnthropicかPLaMoのAPIキー
 
-1. Linuxコードベース、clangdの準備
+1. Cppコードベース、clangdの準備
 
 ```
-git clone https://github.com/torvalds/linux
+git clone <your repository>
 brew install clangd
 ```
 
@@ -50,20 +50,22 @@ make defconfig
 bear -- make LLVM=1 -j16
 ```
 
+など...
+
 3. vscode のインストール
 
 1.100.0 以上をインストールしてください
 
-4. VSCode で LinuxReader をダウンロード
+4. VSCode で CppReader をダウンロード
 
-https://marketplace.visualstudio.com/items?itemName=coffeecupjapan.linux-reader&ssr=false#overview
+https://marketplace.visualstudio.com/items?itemName=coffeecupjapan.cpp-reader&ssr=false#overview
 
 #### 開く
-ダウンロード完了したら、「Command + Shift + p」でコマンドパレットを開き、「Open Linux in New Tab」をクリック  
+ダウンロード完了したら、「Command + Shift + p」でコマンドパレットを開き、「Open Cpp Tab」をクリック  
 クリック後に、右側にタブウィンドウが出てくれば成功です
 
 5. 設定の入力
-clangdのパス、Linuxのパス、compile_commands.json のディレクトリのパス、LLM（OpenAI・Claude・Plamo）を入力
+clangdのパス、Cppのパス、compile_commands.json のディレクトリのパス、LLM（OpenAI・Claude・Plamo）を入力
 
 6. チャット画面で探索を開始
 最初に、「探索を開始するファイルパス」「探索を開始する関数」「探索の目的」を入力すれば、探索を開始できます。
@@ -75,74 +77,10 @@ clangdのパス、Linuxのパス、compile_commands.json のディレクトリ�
 
 ## Release Notes
 
-#### 1.0.0
+#### 1.0.1
 
-LinuxReaderの最初のリリース
+CppReaderの最初のリリース
 
-#### 1.0.2
+#### 1.0.1
 
-履歴保存・履歴から再検索の機能を追加
-
-### 1.0.3
-
-Gemini対応
-
-### 1.0.4
-
-jump機能追加
-
-### 1.0.5
-
-履歴入力時に、対話的にコードジャンプする機能追加
-
-### 1.0.6
-
-セキュリティアップデート
-
-### 1.0.7
-
-バグ修正と単体テストの導入
-
-### 1.0.8
-
-History検索関連のバグ修正とHistoryでの単体テストの導入
-
-### 1.0.9
-
-レポート出力の修正とモデルの追加
-
-### 1.0.10
-
-「->」対応のバグと改行含みの関数の位置取得のバグ修正
-
-### 1.0.11
-
-概念ステップ説明を実装
-
-### 1.0.12
-
-コメント機能追加
-
-### 1.0.13
-
-コード再現機能のバグ修正
-
-### 1.0.14
-
-コード履歴追加と定数のバグ修正
-
-### 1.0.15
-
-再現機能の修正
-
-### 1.0.16
-
-\#defineのバグ対応
-
-### 1.0.17
-
-文言修正と初期入力時のバグ修正
-
-### 1.0.18
-
-履歴検索時の検索範囲の拡大
+READMEの修正

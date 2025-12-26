@@ -11,7 +11,7 @@ let view: vscode.WebviewView | vscode.WebviewPanel;
 let linuxReaderAssitant: LinuxReader | null;
 
 export class LinuxLLMReaderProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = "linux-reader.SlidebarProvider";
+  public static readonly viewType = "cpp-reader.SlidebarProvider";
   private disposables: vscode.Disposable[] = [];
   private allowedMessageType = [
     "Init",

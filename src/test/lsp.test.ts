@@ -3,25 +3,20 @@ import {
     getFunctionContentFromLineAndCharacter,
     getFileLineAndCharacterFromFunctionName
 } from "../core/lsp";
-import fork_content from "./stub/lsp/fork_content.json";
-import memory_content from "./stub/lsp/memory_content.json";
-import mmap_content from "./stub/lsp/mmap_content.json";
-import elf_content from "./stub/lsp/elf_h_content.json";
-import pgtable_content from "./stub/lsp/pgtable_h_content.json"
-import binfmt_content from "./stub/lsp/binfmt_elf_content.json"
+import lidar_markser_localizer from "./stub/lsp/lidar_markser_localizer.json";
 import path from "path";
 
 // please edit pathToYourDirectory when you want to test it.
-const pathToYourDirectory = "/Users/kazuyakurihara/Documents/work/llm/LinuxReader"
+const pathToYourDirectory = "/Users/kazuyakurihara/Documents/open_source/car/CppReader"
 
 suite('Extension LSP', () => {
     // getFunctionContentFromLineAndCharacter
     // 行数・何文字目・ファイルパスから、関数の内容を取得
     // fork.c
-	test('getFunctionContentFromLineAndCharacter fork.c', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "fork.c");
-        for(let i = 0; i < fork_content.length; i++) {
-            const currentFileContent = fork_content[i];
+	test('getFunctionContentFromLineAndCharacter lidar_marker_localizer.cpp', async() => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "lidar_marker_localizer.cpp");
+        for(let i = 0; i < lidar_markser_localizer.length; i++) {
+            const currentFileContent = lidar_markser_localizer[i];
             const functionContent = await getFunctionContentFromLineAndCharacter(
                 stubFilePath,
                 currentFileContent.line,
@@ -32,57 +27,16 @@ suite('Extension LSP', () => {
         }
     });
 
-    // memory.c
-    test('getFunctionContentFromLineAndCharacter memory.c', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "memory.c");
-        for (let i = 0; i < memory_content.length; i++) {
-            const currentFileContent = memory_content[i];
-            if (currentFileContent.skipGetFunction) continue;
-            const functionContent = await getFunctionContentFromLineAndCharacter(
-                stubFilePath,
-                currentFileContent.line,
-                currentFileContent.character
-            );
-            assert.strictEqual(functionContent, currentFileContent.content);
-        }
-    });
-    // elf.h
-    test('getFunctionContentFromLineAndCharacter elf.h', async() =>{
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "elf.h");
-        for (let i = 0; i < elf_content.length; i++) {
-            const currentFileContent = elf_content[i];
-            const functionContent = await getFunctionContentFromLineAndCharacter(
-                stubFilePath,
-                currentFileContent.line,
-                currentFileContent.character
-            );
-            assert.strictEqual(functionContent, currentFileContent.content);
-        }
-    });
-    // pgtable.h
-    test('getFunctionContentFromLineAndCharacter pgtable.h', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "pgtable.h");
-        for (let i = 0; i < pgtable_content.length; i++) {
-            const currentFileContent = pgtable_content[i];
-            const functionContent = await getFunctionContentFromLineAndCharacter(
-                stubFilePath,
-                currentFileContent.line,
-                currentFileContent.character
-            );
-            assert.strictEqual(functionContent, currentFileContent.content);
-        }
-    })
-
     // getFileLineAndCharacterFromFunctionName
     // 関数の先頭１行目とファイルパスから、行数・何文字目かを取得
     // fork.c
-    test('getFileLineAndCharacterFromFunctionName fork.c', async () => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "fork.c");
-        for(let i = 0; i < fork_content.length; i++) {
-            const currentFileContent = fork_content[i];
+    test('getFileLineAndCharacterFromFunctionName lidar_marker_localizer.cpp', async () => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "lidar_marker_localizer.cpp");
+        for(let i = 0; i < lidar_markser_localizer.length; i++) {
+            const currentFileContent = lidar_markser_localizer[i];
             const [line, character] = await getFileLineAndCharacterFromFunctionName(
                 stubFilePath,
-                currentFileContent.functionName,
+                currentFileContent.firstLine,
                 currentFileContent.functionName
             )
             assert.strictEqual(currentFileContent.line, line);
@@ -90,53 +44,19 @@ suite('Extension LSP', () => {
             // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
         }
     });
-    // memory.c
-    test('getFileLineAndCharacterFromFunctionName memory.c', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "memory.c");
-        for (let i = 0; i < memory_content.length; i++) {
-            const currentFileContent = memory_content[i];
-            const [line, character] = await getFileLineAndCharacterFromFunctionName(
-                stubFilePath,
-                currentFileContent.functionName,
-                currentFileContent.functionName,
-                false, 
-                true,
-            );
-            assert.strictEqual(currentFileContent.line, line);
-            assert.strictEqual(currentFileContent.character, character);
-        }
-    });
-    // mmap.c
-    test('getFileLineAndCharacterFromFunctionName mmap.c', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "mmap.c");
-        for (let i = 0; i < mmap_content.length; i++) {
-            const currentFileContent = mmap_content[i];
-            const [line, character] = await getFileLineAndCharacterFromFunctionName(
-                stubFilePath,
-                currentFileContent.functionName,
-                currentFileContent.functionName,
-                false,
-                true,
-            );
-            assert.strictEqual(currentFileContent.line, line);
-            assert.strictEqual(currentFileContent.character, character);
-        }
-    });
-    // binfmt_elf.c
-    test('getFileLineAndCharacterFromFunctionName binfmt_elf.c', async() => {
-        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "binfmt_elf.c");
-        for (let i = 0; i < binfmt_content.length; i++) {
-            const currentFileContent = binfmt_content[i];
-            // 入力時のみ考慮なので、１行目にしている。
+    test('getFileLineAndCharacterFromFunctionName lidar_marker_localizer.cpp isFirst', async () => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "lidar_marker_localizer.cpp");
+        for(let i = 0; i < lidar_markser_localizer.length; i++) {
+            const currentFileContent = lidar_markser_localizer[i];
             const [line, character] = await getFileLineAndCharacterFromFunctionName(
                 stubFilePath,
                 currentFileContent.firstLine,
                 currentFileContent.firstLine,
-                true,
-                true,
-            );
-            assert.strictEqual(currentFileContent.line, line);
-            assert.strictEqual(currentFileContent.character, character);
+                true
+            )
+            assert.strictEqual(currentFileContent.queryLine, line);
+            assert.strictEqual(currentFileContent.queryCharacter, character);
+            // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
         }
-    })
+    });
 });

@@ -1,8 +1,8 @@
 {
-  "name": "linux-reader",
-  "displayName": "linux-reader",
-  "description": " Linux のソースコードをLLMと一緒に効率的に読むための VSCode 拡張",
-  "version": "1.0.17",
+  "name": "cpp-reader",
+  "displayName": "cpp-reader",
+  "description": " Cpp のソースコードをLLMと一緒に効率的に読むための VSCode 拡張",
+  "version": "1.0.1",
   "type": "commonjs",
   "icon": "logo.png",
   "engines": {
@@ -15,25 +15,25 @@
   "publisher": "coffeecupjapan",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YmBIgo/LinuxReader"
+    "url": "https://github.com/YmBIgo/CppReader"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:linux-reader.helloWorld",
-    "onCommand:linux-reader.openInNewTab"
+    "onCommand:cpp-reader.helloWorld",
+    "onCommand:cpp-reader.openInNewTab"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "linux-reader.helloWorld",
+        "command": "cpp-reader.helloWorld",
         "title": "Hello World"
       },
       {
-        "command": "linux-reader.openInNewTab",
-        "title": "Open Linux Tab"
+        "command": "cpp-reader.openInNewTab",
+        "title": "Open Cpp Tab"
       }
     ]
   },
