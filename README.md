@@ -77,10 +77,14 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.3
+
+LSPのバグの修正
+
+#### 1.0.2
+
+READMEの修正
+
 #### 1.0.1
 
 CppReaderの最初のリリース
-
-#### 1.0.1
-
-READMEの修正
