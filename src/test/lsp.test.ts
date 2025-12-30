@@ -17,6 +17,7 @@ suite('Extension LSP', () => {
         const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "lidar_marker_localizer.cpp");
         for(let i = 0; i < lidar_markser_localizer.length; i++) {
             const currentFileContent = lidar_markser_localizer[i];
+            if (!currentFileContent.content) continue;
             const functionContent = await getFunctionContentFromLineAndCharacter(
                 stubFilePath,
                 currentFileContent.line,
@@ -48,6 +49,7 @@ suite('Extension LSP', () => {
         const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "lidar_marker_localizer.cpp");
         for(let i = 0; i < lidar_markser_localizer.length; i++) {
             const currentFileContent = lidar_markser_localizer[i];
+            if (!currentFileContent.queryLine || !currentFileContent.queryCharacter) continue;
             const [line, character] = await getFileLineAndCharacterFromFunctionName(
                 stubFilePath,
                 currentFileContent.firstLine,

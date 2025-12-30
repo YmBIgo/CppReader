@@ -271,7 +271,7 @@ function escapeRegExp(s: string): string {
  * C++ の関数名（"foo", "A::foo", "~A", "operator<<", "operator new" 等）を想定して
  * それっぽく検索するための regex を作る
  */
-function buildCppFunctionSearchRegex(functionNameRaw: string): RegExp[] {
+function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][] {
   const name = functionNameRaw.trim();
 
   // ありがちな入力揺れ対策：
@@ -293,6 +293,8 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): RegExp[] {
       "operator\\s*[^\\(\\n]*"
       : escaped;
 
+  console.log("basename : ", baseName);
+
   const r1 =
     new RegExp(
       // 前に識別子境界（ただし :: の途中もあるので単純 \b だけにしない）
@@ -302,7 +304,7 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): RegExp[] {
 
   // 2) メソッド定義: A::foo(
   const r2 = new RegExp(
-    `(^|[^\\w])([A-Za-z_][\\w:]*)\\s*::\\s*(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
+    `(^|[^\\w])([A-Za-z_][\\w:]\\s*[:]{0,2}\\s*)(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
     "m"
   );
 
@@ -313,7 +315,13 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): RegExp[] {
     "m"
   );
 
-  return [r2, r1, r3];
+  // 4) 単純にbasenameのみの場合
+  const r4 = new RegExp(
+    `(^|[^\\w])(${baseName})([^\\w]|$)`,
+    "m"
+  );
+
+  return [[r2, 1], [r1, 0], [r3, 1], [r4, 0]];
 }
 
 /**
@@ -337,7 +345,17 @@ export async function getFileLineAndCharacterFromFunctionName(
   }
 
   const lines = fileContent.split("\n");
-  const regexes = buildCppFunctionSearchRegex(functionName);
+  let fixedFunctionName = functionName;
+  if (!isFirst && fixedFunctionName.includes("::")) {
+    fixedFunctionName = fixedFunctionName.split("::").slice(-1)[0];
+  }
+  if (!isFirst && fixedFunctionName.includes("->")) {
+    fixedFunctionName = fixedFunctionName.split("->").slice(-1)[0];
+  }
+  if (!isFirst && fixedFunctionName.includes(".")) {
+    fixedFunctionName = fixedFunctionName.split(".").slice(-2).join(".");
+  }
+  const regexes = buildCppFunctionSearchRegex(fixedFunctionName);
 
   // コメント/文字列中を除外するために状態を持って上からスキャン
   const state = createScanState();
@@ -373,12 +391,22 @@ export async function getFileLineAndCharacterFromFunctionName(
     }
 
     // 検索
-    for (const r of regexes) {
+    for (const reg of regexes) {
+      const r = reg[0] as RegExp;
+      const regCount = reg[1] as number;
       const m = r.exec(row);
       if (!m) continue;
 
       // マッチ位置（ざっくり function 名の開始）
-      const idx = m.index + (m[1] ? m[1].length : 0);
+      let mindex = 0;
+      for (let cnt = 0; cnt <= regCount; cnt++) {
+        mindex += m[cnt+1].length;
+      }
+      let idx = m.index + mindex;
+      if (m[0].endsWith(".")) continue; // メンバアクセスっぽいのは除外
+      if (m[0].split(".").length > 2) {
+        idx = idx + m[0].split(".").slice(0, -1).join(".").length; // foo.bar.baz の baz 部分だけに調整
+      }
 
       // 定義っぽさスコア：近傍に '{' があるなら強い
       const near = lines.slice(i, i + 15).join("\n");
