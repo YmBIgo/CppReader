@@ -854,8 +854,9 @@ ${description.ask ? description.ask : "not provided..."}
     console.log(line, character);
     let itemString: string = "";
     const fileContent = await fs.readFile(filePath, "utf-8");
+    await client?.restart();
     await pWaitFor(() => !!this.isClangdRunning(), {
-      interval: 500,
+      interval: 1000,
     });
     await client?.sendNotification("textDocument/didOpen", {
       textDocument: {

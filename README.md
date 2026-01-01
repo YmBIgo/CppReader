@@ -77,6 +77,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.4
+
+LSPのrestartのバグ修正
+
 #### 1.0.3
 
 LSPのバグの修正
