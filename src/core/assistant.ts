@@ -908,6 +908,7 @@ ${description.ask ? description.ask : "not provided..."}
     ];
   }
 
+  // for reference query not used...
   private async doQueryReferenceClangd(
     filePath: string,
     line: number,
@@ -994,13 +995,19 @@ ${description.ask ? description.ask : "not provided..."}
             newCharacter1
           );
         if (i === 2) {
+          // [newFilePath2, newLine2, newCharacter2, item2] =
+          //   await this.doQueryReferenceClangd(
+          //     removeFilePrefixFromFilePath(newFilePath1),
+          //     newLine1,
+          //     newCharacter1
+          //   );
           [newFilePath2, newLine2, newCharacter2, item2] =
-            await this.doQueryReferenceClangd(
+            await this.doQueryClangd(
               removeFilePrefixFromFilePath(newFilePath1),
               newLine1,
               newCharacter1
             );
-            break;
+          break;
         }
       } else if (newFilePath2.endsWith(".cpp")) {
         break;
