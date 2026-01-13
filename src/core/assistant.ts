@@ -1001,6 +1001,13 @@ ${description.ask ? description.ask : "not provided..."}
           //     newLine1,
           //     newCharacter1
           //   );
+          const fileContent = await getFunctionContentFromLineAndCharacter(
+            removeFilePrefixFromFilePath(newFilePath2),
+            newLine2,
+            newCharacter2
+          );
+          await this.jumpToCode(removeFilePrefixFromFilePath(newFilePath2), fileContent);
+          new Promise((resolve) => setTimeout(resolve, 1000));
           [newFilePath2, newLine2, newCharacter2, item2] =
             await this.doQueryClangd(
               removeFilePrefixFromFilePath(newFilePath1),
