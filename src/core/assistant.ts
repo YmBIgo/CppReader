@@ -63,6 +63,7 @@ export class LinuxReader {
   private rootCharacter: number = -1;
   private rootFunctionName: string = "";
   private purpose: string = "";
+  private linuxPath: string = "";
 
   private saySocket: (content: string) => void;
   private sendErrorSocket: (content: string) => void;
@@ -140,6 +141,7 @@ export class LinuxReader {
     if (!clangdPath || !linuxPath || !compileCommandPath) {
       return;
     }
+    this.linuxPath = linuxPath;
     this.init(clangdPath, linuxPath, compileCommandPath);
   }
 
@@ -890,7 +892,12 @@ ${description.ask ? description.ask : "not provided..."}
       console.log("item not array", item);
       return ["", 0, 0, item];
     }
-    const firstItem = item[0];
+    const firstItem = item.find((it: any) => {
+      return it.includes(this.linuxPath);
+    }) 
+    item.find((it: any) => {
+      return it.uri.endsWith(".cpp")
+    })|| item[0];
     const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
