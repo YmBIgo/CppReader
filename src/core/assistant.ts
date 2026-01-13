@@ -895,7 +895,7 @@ ${description.ask ? description.ask : "not provided..."}
     const firstItem = item.find((it: any) => {
       return it.includes(this.linuxPath);
     }) 
-    item.find((it: any) => {
+    || item.find((it: any) => {
       return it.uri.endsWith(".cpp")
     })|| item[0];
     const file = firstItem.uri;
