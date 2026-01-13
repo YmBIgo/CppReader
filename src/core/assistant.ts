@@ -985,16 +985,11 @@ ${description.ask ? description.ask : "not provided..."}
     let newLine2 = newLine1;
     let newCharacter2 = newCharacter1;
     let item2 = item1;
+    let isFirstHppJump = true;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       if (newFilePath2.endsWith(".hpp")) {
-        [newFilePath2, newLine2, newCharacter2, item2] =
-          await this.doQueryClangd(
-            removeFilePrefixFromFilePath(newFilePath1),
-            newLine1,
-            newCharacter1
-          );
-        if (i === 2) {
+        if (isFirstHppJump) {
           // [newFilePath2, newLine2, newCharacter2, item2] =
           //   await this.doQueryReferenceClangd(
           //     removeFilePrefixFromFilePath(newFilePath1),
@@ -1008,14 +1003,14 @@ ${description.ask ? description.ask : "not provided..."}
           );
           await this.jumpToCode(removeFilePrefixFromFilePath(newFilePath2), fileContent);
           new Promise((resolve) => setTimeout(resolve, 1000));
-          [newFilePath2, newLine2, newCharacter2, item2] =
-            await this.doQueryClangd(
-              removeFilePrefixFromFilePath(newFilePath1),
-              newLine1,
-              newCharacter1
-            );
-          break;
+          isFirstHppJump = false;
         }
+        [newFilePath2, newLine2, newCharacter2, item2] =
+        await this.doQueryClangd(
+          removeFilePrefixFromFilePath(newFilePath1),
+          newLine1,
+          newCharacter1
+        );
       } else if (newFilePath2.endsWith(".cpp")) {
         break;
       }
