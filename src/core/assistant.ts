@@ -908,6 +908,71 @@ ${description.ask ? description.ask : "not provided..."}
     ];
   }
 
+  private async doQueryReferenceClangd(
+    filePath: string,
+    line: number,
+    character: number,
+    shouldWaitMs: number = 2000
+  ): Promise<[string, number, number, any]> {
+    console.log(line, character);
+    let itemString: string = "";
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    await client?.restart();
+    await pWaitFor(() => !!this.isClangdRunning(), {
+      interval: 1000,
+    });
+    await client?.sendNotification("textDocument/didOpen", {
+      textDocument: {
+        uri: addFilePrefixToFilePath(filePath),
+        languageId: "cpp",
+        version: 0,
+        text: fileContent,
+      },
+    });
+    if (shouldWaitMs) {
+      await new Promise((resolve) => setTimeout(resolve, shouldWaitMs));
+    }
+    await client
+      ?.sendRequest("textDocument/references", {
+        textDocument: {
+          uri: addFilePrefixToFilePath(filePath),
+        },
+        position: { line, character },
+      })
+      .then((result) => {
+        itemString = JSON.stringify(result);
+      });
+    let item: any = [];
+    try {
+      item = JSON.parse(itemString as any);
+    } catch (e) {
+      console.error(e);
+      this.saveChoiceTree();
+    }
+    if (!Array.isArray(item) || item.length <= 0) {
+      console.log("item not array", item);
+      return ["", 0, 0, item];
+    }
+    const firstItem = item.find((it: any) => {
+      return it.uri.endsWith(".cpp");
+    }) || item[0];
+    const file = firstItem.uri;
+    await client?.sendNotification("textDocument/didClose", {
+      textDocument: {
+        uri: addFilePrefixToFilePath(filePath),
+        languageId: "cpp",
+        version: 0,
+        text: fileContent,
+      },
+    });
+    return [
+      file,
+      firstItem.range.start.line,
+      firstItem.range.start.character,
+      item,
+    ];
+  }
+
   async queryClangd(
     filePath: string,
     line: number,
@@ -920,15 +985,24 @@ ${description.ask ? description.ask : "not provided..."}
     let newCharacter2 = newCharacter1;
     let item2 = item1;
 
-    for (let i = 0; i < 5; i++) {
-      if (newFilePath2.endsWith(".h")) {
+    for (let i = 0; i < 3; i++) {
+      if (newFilePath2.endsWith(".hpp")) {
         [newFilePath2, newLine2, newCharacter2, item2] =
           await this.doQueryClangd(
             removeFilePrefixFromFilePath(newFilePath1),
             newLine1,
             newCharacter1
           );
-      } else if (newFilePath2.endsWith(".c")) {
+        if (i === 2) {
+          [newFilePath2, newLine2, newCharacter2, item2] =
+            await this.doQueryReferenceClangd(
+              removeFilePrefixFromFilePath(newFilePath1),
+              newLine1,
+              newCharacter1
+            );
+            break;
+        }
+      } else if (newFilePath2.endsWith(".cpp")) {
         break;
       }
     }
