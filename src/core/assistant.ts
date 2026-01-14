@@ -893,7 +893,7 @@ ${description.ask ? description.ask : "not provided..."}
       return ["", 0, 0, item];
     }
     const firstItem = item.find((it: any) => {
-      return it.includes(this.linuxPath);
+      return it.url.includes(this.linuxPath);
     }) 
     || item.find((it: any) => {
       return it.uri.endsWith(".cpp")
