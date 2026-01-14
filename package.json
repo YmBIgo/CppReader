@@ -2,7 +2,7 @@
   "name": "cpp-reader",
   "displayName": "cpp-reader",
   "description": " Cpp のソースコードをLLMと一緒に効率的に読むための VSCode 拡張",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "type": "commonjs",
   "icon": "logo.png",
   "engines": {
