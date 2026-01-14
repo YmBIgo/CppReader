@@ -893,10 +893,10 @@ ${description.ask ? description.ask : "not provided..."}
       return ["", 0, 0, item];
     }
     const firstItem = item.find((it: any) => {
-      return it.url.includes(this.linuxPath);
+      return it.uri?.includes(this.linuxPath);
     }) 
     || item.find((it: any) => {
-      return it.uri.endsWith(".cpp")
+      return it.uri?.endsWith(".cpp")
     })|| item[0];
     const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
