@@ -156,11 +156,11 @@ export class LinuxReader {
         `--compile-commands-dir=${compileCommand}`,
         "--background-index",
         "--log=verbose",
-        "--query-driver=/usr/bin/c++,user/bin/g++",
+        "--query-driver=/usr/bin/*,/bin/*,/usr/local/bin/*",
       ],
       options: {
         cwd: linuxPath,
-        shell: true,
+        shell: false,
       },
     };
     const serverOptions: vscodelc.ServerOptions = clangd;
