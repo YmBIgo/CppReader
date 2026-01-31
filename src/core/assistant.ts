@@ -999,7 +999,7 @@ ${description.ask ? description.ask : "not provided..."}
               newLine1,
               newCharacter1
             );
-          const itemUrls = referenceItems.map((it) => it.uri).filter((it) => it.endsWith(".cpp"));
+          const itemUrls = referenceItems.map((it) => it?.uri || "");
           // uniq filter itemUrls
           const uniqItemUrls = Array.from(new Set(itemUrls));
           for(const url of uniqItemUrls) await new Promise<void>(async (_) => {
