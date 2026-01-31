@@ -4,6 +4,10 @@ All notable changes to the "linux-reader" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.13
+
+- hpp探索ミスのバグ修正9
+
 ## 1.0.12
 
 - hpp探索ミスのバグ修正8
