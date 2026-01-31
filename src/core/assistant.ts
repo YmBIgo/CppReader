@@ -993,14 +993,29 @@ ${description.ask ? description.ask : "not provided..."}
     for (let i = 0; i < 4; i++) {
       if (newFilePath2.endsWith(".hpp")) {
         if (isFirstHppJump) {
-          const referenceItems =
+          await this.jumpToCode(
+            removeFilePrefixFromFilePath(newFilePath2),
+            await getFunctionContentFromLineAndCharacter(
+              removeFilePrefixFromFilePath(newFilePath2),
+              newLine2,
+              newCharacter2
+            )
+          );
+          let referenceItems =
             await this.doQueryReferenceClangd(
               removeFilePrefixFromFilePath(newFilePath1),
               newLine1,
               newCharacter1
             );
+          if (referenceItems.length === 0) {
+            referenceItems = await this.doQueryReferenceClangd(
+              removeFilePrefixFromFilePath(filePath),
+              newLine1,
+              newCharacter1
+            );
+          }
           const itemUrls = referenceItems.map((it) => it?.uri || "").filter(Boolean);
-          console.log(itemUrls)
+          console.log("reference items : ", itemUrls)
           // uniq filter itemUrls
           const uniqItemUrls = Array.from(new Set(itemUrls));
           for(const url of uniqItemUrls) await new Promise<void>(async (_) => {
