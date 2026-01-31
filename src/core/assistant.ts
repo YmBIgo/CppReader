@@ -603,7 +603,7 @@ ${stepActions}
     this.runTask(removeFilePrefixFromFilePath(newFile), newFunctionContent);
   }
 
-  private async jumpToCode(currentFilePath: string, functionContent: string) {
+  private async jumpToCode(currentFilePath: string, functionContent: string, isCloseAfterJump: boolean = false) {
     console.log("Opening file", currentFilePath, functionContent.slice(0, 30));
     try {
       const openDoc = await vscode.workspace.openTextDocument(
@@ -633,6 +633,11 @@ ${stepActions}
         vscode.TextEditorRevealType.AtTop
       )
       // this.saySocket("\n\n----------\n" + functionContent + "\n----------\n\n");
+      if (isCloseAfterJump) {
+        await vscode.commands.executeCommand(
+          'workbench.action.closeActiveEditor'
+        );
+      }
     } catch (e) {
       console.warn(e);
     }
@@ -897,7 +902,7 @@ ${description.ask ? description.ask : "not provided..."}
     }) 
     || item.find((it: any) => {
       return it.uri?.endsWith(".cpp")
-    })|| item[0];
+    }) || item[0];
     const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
@@ -921,7 +926,7 @@ ${description.ask ? description.ask : "not provided..."}
     line: number,
     character: number,
     shouldWaitMs: number = 2000
-  ): Promise<[string, number, number, any]> {
+  ): Promise<any[]> {
     console.log(line, character);
     let itemString: string = "";
     const fileContent = await fs.readFile(filePath, "utf-8");
@@ -961,10 +966,6 @@ ${description.ask ? description.ask : "not provided..."}
       console.log("item not array", item);
       return ["", 0, 0, item];
     }
-    const firstItem = item.find((it: any) => {
-      return it.uri.endsWith(".cpp");
-    }) || item[0];
-    const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
         uri: addFilePrefixToFilePath(filePath),
@@ -973,12 +974,7 @@ ${description.ask ? description.ask : "not provided..."}
         text: fileContent,
       },
     });
-    return [
-      file,
-      firstItem.range.start.line,
-      firstItem.range.start.character,
-      item,
-    ];
+    return item;
   }
 
   async queryClangd(
@@ -997,12 +993,18 @@ ${description.ask ? description.ask : "not provided..."}
     for (let i = 0; i < 4; i++) {
       if (newFilePath2.endsWith(".hpp")) {
         if (isFirstHppJump) {
-          // [newFilePath2, newLine2, newCharacter2, item2] =
-          //   await this.doQueryReferenceClangd(
-          //     removeFilePrefixFromFilePath(newFilePath1),
-          //     newLine1,
-          //     newCharacter1
-          //   );
+          const referenceItems =
+            await this.doQueryReferenceClangd(
+              removeFilePrefixFromFilePath(newFilePath1),
+              newLine1,
+              newCharacter1
+            );
+          const itemUrls = referenceItems.map((it) => it.uri).filter((it) => it.endsWith(".cpp"));
+          // uniq filter itemUrls
+          const uniqItemUrls = Array.from(new Set(itemUrls));
+          for(const url of uniqItemUrls) await new Promise<void>(async (_) => {
+            await this.jumpToCode(removeFilePrefixFromFilePath(url), "", true);
+          });
           const fileContent = await getFunctionContentFromLineAndCharacter(
             removeFilePrefixFromFilePath(newFilePath2),
             newLine2,
