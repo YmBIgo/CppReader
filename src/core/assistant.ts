@@ -122,20 +122,20 @@ export class LinuxReader {
       llmName === "openai"
         ? openAIModel
         : llmName === "anthropic"
-        ? anthropicModel
-        : llmName === "gemini"
-        ? geminiModel
-        : "";
+          ? anthropicModel
+          : llmName === "gemini"
+            ? geminiModel
+            : "";
     const apiKey =
       llmName === "openai"
         ? openAIApiKey
         : llmName === "anthropic"
-        ? anthropicApiKey
-        : llmName === "plamo"
-        ? plamoApiKey
-        : llmName === "gemini"
-        ? geminiApiKey
-        : "unknown llm name";
+          ? anthropicApiKey
+          : llmName === "plamo"
+            ? plamoApiKey
+            : llmName === "gemini"
+              ? geminiApiKey
+              : "unknown llm name";
     this.apiHandler = buildLLMHanlder(llmName, modelType, apiKey);
     this.saveReportFolder = reportPath;
     if (!clangdPath || !linuxPath || !compileCommandPath) {
@@ -316,7 +316,7 @@ ${functionContent}
         true
       )) ?? "{}"
       stepResponseJson = JSON.parse(response);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
       this.sendErrorSocket(`APIエラー`);
       this.saveChoiceTree();
@@ -391,84 +391,84 @@ ${stepActions}
           }
           return false;
         }) ??
-        fileContentArray.find((fcr) => {
-          const spaceRemovedRow = fcr.replace(/ /g, "").replace(/\t/g, "");
-          let commentStartIndex: number = -1;
-          let commentEndIndex: number = -1;
-          const longCommentStart = spaceRemovedRow.matchAll(/\/\*/g);
-          const longCommentEnd = spaceRemovedRow.matchAll(/\*\//g);
-          for (const start_m of longCommentStart) {
-            commentStartIndex = start_m.index;
-            // 最初で破棄
-            break;
-          }
-          for (const end_m of longCommentEnd) {
-            // 最後まで読む
-            commentEndIndex = end_m.index;
-          }
-          if (
-            commentStartIndex !== -1 &&
-            commentEndIndex !== -1 &&
-            commentStartIndex < commentEndIndex
-          ) {
-            // 1行のコメントなのでskip
-          } else if (isLongComment && commentEndIndex !== -1) {
-            // 一旦複雑なケースは考慮しない（コメントの中でのコメント定義など）
-            isLongComment = false;
-          } else if (!isLongComment && commentStartIndex !== -1) {
-            isLongComment = true;
-          }
-          if (isLongComment) {
-            return;
-          }
-          if (spaceRemovedRow.startsWith("//")) {
-            return;
-          }
-        }) ??
-        each_r.code_line.includes(each_r["name"])
+          fileContentArray.find((fcr) => {
+            const spaceRemovedRow = fcr.replace(/ /g, "").replace(/\t/g, "");
+            let commentStartIndex: number = -1;
+            let commentEndIndex: number = -1;
+            const longCommentStart = spaceRemovedRow.matchAll(/\/\*/g);
+            const longCommentEnd = spaceRemovedRow.matchAll(/\*\//g);
+            for (const start_m of longCommentStart) {
+              commentStartIndex = start_m.index;
+              // 最初で破棄
+              break;
+            }
+            for (const end_m of longCommentEnd) {
+              // 最後まで読む
+              commentEndIndex = end_m.index;
+            }
+            if (
+              commentStartIndex !== -1 &&
+              commentEndIndex !== -1 &&
+              commentStartIndex < commentEndIndex
+            ) {
+              // 1行のコメントなのでskip
+            } else if (isLongComment && commentEndIndex !== -1) {
+              // 一旦複雑なケースは考慮しない（コメントの中でのコメント定義など）
+              isLongComment = false;
+            } else if (!isLongComment && commentStartIndex !== -1) {
+              isLongComment = true;
+            }
+            if (isLongComment) {
+              return;
+            }
+            if (spaceRemovedRow.startsWith("//")) {
+              return;
+            }
+          }) ??
+          each_r.code_line.includes(each_r["name"])
           ? each_r.code_line
           : fileContentArray.find((fcr) => {
-              const spaceRemovedRow = fcr.replace(/ /g, "").replace(/\t/g, "");
-              if (spaceRemovedRow.startsWith("//")) {
-                return false;
-              }
-              let commentStartIndex: number = -1;
-              let commentEndIndex: number = -1;
-              const longCommentStart = spaceRemovedRow.matchAll(/\/\*/g);
-              const longCommentEnd = spaceRemovedRow.matchAll(/\*\//g);
-              for (const start_m of longCommentStart) {
-                commentStartIndex = start_m.index;
-                // 最初で破棄
-                break;
-              }
-              for (const end_m of longCommentEnd) {
-                // 最後まで読む
-                commentEndIndex = end_m.index;
-              }
-              if (
-                commentStartIndex !== -1 &&
-                commentEndIndex !== -1 &&
-                commentStartIndex < commentEndIndex
-              ) {
-                // 1行のコメントなのでskip
-              } else if (isLongComment2 && commentEndIndex !== -1) {
-                // 一旦複雑なケースは考慮しない（コメントの中でのコメント定義など）
-                isLongComment2 = false;
-              } else if (!isLongComment && commentStartIndex !== -1) {
-                isLongComment2 = true;
-              }
-              if (isLongComment2) {
-                return false;
-              }
-              return fcr.includes(each_r["name"]);
-            }) ?? each_r["name"];
+            const spaceRemovedRow = fcr.replace(/ /g, "").replace(/\t/g, "");
+            if (spaceRemovedRow.startsWith("//")) {
+              return false;
+            }
+            let commentStartIndex: number = -1;
+            let commentEndIndex: number = -1;
+            const longCommentStart = spaceRemovedRow.matchAll(/\/\*/g);
+            const longCommentEnd = spaceRemovedRow.matchAll(/\*\//g);
+            for (const start_m of longCommentStart) {
+              commentStartIndex = start_m.index;
+              // 最初で破棄
+              break;
+            }
+            for (const end_m of longCommentEnd) {
+              // 最後まで読む
+              commentEndIndex = end_m.index;
+            }
+            if (
+              commentStartIndex !== -1 &&
+              commentEndIndex !== -1 &&
+              commentStartIndex < commentEndIndex
+            ) {
+              // 1行のコメントなのでskip
+            } else if (isLongComment2 && commentEndIndex !== -1) {
+              // 一旦複雑なケースは考慮しない（コメントの中でのコメント定義など）
+              isLongComment2 = false;
+            } else if (!isLongComment && commentStartIndex !== -1) {
+              isLongComment2 = true;
+            }
+            if (isLongComment2) {
+              return false;
+            }
+            return fcr.includes(each_r["name"]);
+          }) ?? each_r["name"];
       parsedContentCodeLineArray.push(fileCodeLine);
       askQuestion += `${index} : ${each_r.name}\n`;
       askQuestion += `Details : ${each_r.description}\n`;
       askQuestion += `Whole Code Line : ${fileCodeLine}\n`;
       askQuestion += `Original Code : ${each_r.code_line}\n`;
       askQuestion += `Confidence : ${each_r.score}\n`;
-      if(!isNaN(Number(each_r.step)) && stepResponseJson[Number(each_r.step - 1)]){
+      if (!isNaN(Number(each_r.step)) && stepResponseJson[Number(each_r.step - 1)]) {
         askQuestion += `Step : ${each_r.step} ${stepResponseJson[Number(each_r.step - 1)].action}\n`;
       }
       askQuestion += `----------------------------\n`;
@@ -483,11 +483,11 @@ ${stepActions}
     let result: AskResponse | null = null;
     const oldPosition = this.historyHanlder?.getCurrentChoicePosition();
     this.historyHanlder?.addHistory(newHistoryChoices);
-    if (oldPosition && oldPosition.length){
-       this.historyHanlder?.move(oldPosition);
+    if (oldPosition && oldPosition.length) {
+      this.historyHanlder?.move(oldPosition);
     }
     this.saySocket(`${askQuestion}`);
-    for (;;) {
+    for (; ;) {
       result = await this.askSocket(`
 表示したい詳細のインデックス（0〜4）を入力してください。
   - 5 を入力すると再試行できます
@@ -586,7 +586,7 @@ ${stepActions}
         const newHc = hc;
         newHc.originalFilePath = removeFilePrefixFromFilePath(newFile);
         return newHc;
-      } 
+      }
       return hc
     })
     // historyのパスは検索後に確定する
@@ -595,7 +595,7 @@ ${stepActions}
     this.historyHanlder?.choose(
       resultNumber,
       newFunctionContent,
-      responseJSON[resultNumber].score +  " | " + responseJSON[resultNumber].description
+      responseJSON[resultNumber].score + " | " + responseJSON[resultNumber].description
     );
     this.saySocket(
       `LLMは ${newFile}@${newLine}:${newCharacter} を検索しています`
@@ -613,25 +613,27 @@ ${stepActions}
         preview: false, // タブの使い回しを避ける場合は false
         preserveFocus: false, // エディタにフォーカスを移す
       });
-      const openDocText = openDoc.getText().split("\n");
-      const functionLines = functionContent.split("\n").filter((fcr) => {
-        return fcr.replace(/\s\t/g, "") !== "";
-      });
-      let functionStartLine = functionLines[0];
-      let functionEndLine = functionLines.at(-1);
-      const functionStartLineIndex =
-        openDocText.findIndex((odt) => odt === functionStartLine) ?? 0;
-      const positionStart = new vscode.Position(functionStartLineIndex, 0);
-      const positionEnd = new vscode.Position(
-        functionStartLineIndex + functionContent.split("\n").length,
-        functionEndLine?.length ?? 10000
-      );
-      const selection = new vscode.Selection(positionStart, positionEnd);
-      vscode.window.activeTextEditor!.selection = selection;
-      vscode.window.activeTextEditor?.revealRange(
-        new vscode.Range(positionStart, positionEnd),
-        vscode.TextEditorRevealType.AtTop
-      )
+      if (functionContent) {
+        const openDocText = openDoc.getText().split("\n");
+        const functionLines = functionContent.split("\n").filter((fcr) => {
+          return fcr.replace(/\s\t/g, "") !== "";
+        });
+        let functionStartLine = functionLines[0];
+        let functionEndLine = functionLines.at(-1);
+        const functionStartLineIndex =
+          openDocText.findIndex((odt) => odt === functionStartLine) ?? 0;
+        const positionStart = new vscode.Position(functionStartLineIndex, 0);
+        const positionEnd = new vscode.Position(
+          functionStartLineIndex + functionContent.split("\n").length,
+          functionEndLine?.length ?? 10000
+        );
+        const selection = new vscode.Selection(positionStart, positionEnd);
+        vscode.window.activeTextEditor!.selection = selection;
+        vscode.window.activeTextEditor?.revealRange(
+          new vscode.Range(positionStart, positionEnd),
+          vscode.TextEditorRevealType.AtTop
+        )
+      }
       // this.saySocket("\n\n----------\n" + functionContent + "\n----------\n\n");
       if (isCloseAfterJump) {
         await vscode.commands.executeCommand(
@@ -698,7 +700,7 @@ ${stepActions}
         this.saySocket(comment);
       }
       let resultString = ""
-      for(;;) {
+      for (; ;) {
         const result = await this.askSocket("もし次の関数にジャンプする場合は、1を入力してください");
         if (parseInt(result.ask) === 1) {
           resultString = "1"
@@ -899,10 +901,10 @@ ${description.ask ? description.ask : "not provided..."}
     }
     const firstItem = item.find((it: any) => {
       return it.uri?.includes(this.linuxPath);
-    }) 
-    || item.find((it: any) => {
-      return it.uri?.endsWith(".cpp")
-    }) || item[0];
+    })
+      || item.find((it: any) => {
+        return it.uri?.endsWith(".cpp")
+      }) || item[0];
     const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
@@ -1018,7 +1020,7 @@ ${description.ask ? description.ask : "not provided..."}
           console.log("reference items : ", itemUrls)
           // uniq filter itemUrls
           const uniqItemUrls = Array.from(new Set(itemUrls));
-          for(const url of uniqItemUrls) await new Promise<void>(async (_) => {
+          for (const url of uniqItemUrls) await new Promise<void>(async (_) => {
             await this.jumpToCode(removeFilePrefixFromFilePath(url), "", true);
           });
           const fileContent = await getFunctionContentFromLineAndCharacter(
@@ -1031,11 +1033,11 @@ ${description.ask ? description.ask : "not provided..."}
           isFirstHppJump = false;
         }
         [newFilePath2, newLine2, newCharacter2, item2] =
-        await this.doQueryClangd(
-          removeFilePrefixFromFilePath(newFilePath1),
-          newLine1,
-          newCharacter1
-        );
+          await this.doQueryClangd(
+            removeFilePrefixFromFilePath(newFilePath1),
+            newLine1,
+            newCharacter1
+          );
       } else if (newFilePath2.endsWith(".cpp")) {
         break;
       }
@@ -1056,12 +1058,12 @@ ${description.ask ? description.ask : "not provided..."}
     this.rootPath = "";
     this.rootLine = -1;
     this.rootCharacter = -1;
-    this.saySocket = () => {};
+    this.saySocket = () => { };
     this.askSocket = async (content: string) => {
       return {} as AskResponse;
     };
     this.messages = [];
-    this.sendState = () => {};
+    this.sendState = () => { };
     this.historyHanlder = null;
     this.apiHandler = buildLLMHanlder("openai", "gpt-4.1", "no key");
   }
