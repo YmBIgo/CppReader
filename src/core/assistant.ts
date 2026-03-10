@@ -899,12 +899,12 @@ ${description.ask ? description.ask : "not provided..."}
       console.log("item not array", item);
       return ["", 0, 0, item];
     }
-    const firstItem = item.find((it: any) => {
-      return it.uri?.includes(this.linuxPath);
-    })
-      || item.find((it: any) => {
-        return it.uri?.endsWith(".cpp")
-      }) || item[0];
+    const firstItem =
+      item.find((it: any) => it.uri?.endsWith(".cpp")) ??
+      item.find((it: any) => it.uri?.endsWith(".cc")) ??
+      item.find((it: any) => it.uri?.endsWith(".cxx")) ??
+      item.find((it: any) => it.uri?.includes(this.linuxPath)) ??
+      item[0];
     const file = firstItem.uri;
     await client?.sendNotification("textDocument/didClose", {
       textDocument: {
