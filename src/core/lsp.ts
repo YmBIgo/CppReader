@@ -316,8 +316,9 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
   );
 
   // 4) 単純にbasenameのみの場合
+  // [^\w"'] とすることで文字列リテラル中の "foo" や 'foo' を誤検出しない
   const r4 = new RegExp(
-    `(^|[^\\w])(${baseName})([^\\w]|$)`,
+    `(^|[^\\w"'])(${baseName})([^\\w"']|$)`,
     "m"
   );
 
