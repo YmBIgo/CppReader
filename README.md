@@ -77,6 +77,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.24
+
+hpp探索ミスのバグ修正20
+
 #### 1.0.23
 
 hpp探索ミスのバグ修正19

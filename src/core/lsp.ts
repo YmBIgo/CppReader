@@ -315,14 +315,32 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
     "m"
   );
 
-  // 4) 単純にbasenameのみの場合
+  // 4) operator new などの operator 系で、空白をゆるく許容するパターン
+  let rOp: RegExp | null = null;
+  if (isOperator) {
+    rOp = new RegExp(
+      `(^|[^\\w])(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
+      "m"
+    );
+    return [[rOp, 1], [r2, 1], [r1, 0], [r3, 1]];
+  }
+
+  // 5) foo->basename などのパターン（ただしメンバアクセスは除外したいので、前に . がある場合は後でスコアを下げる）
+  const r5 = new RegExp(
+    `(^|[^\\w])([\\w:]+\\s*(\.|->)\\s*)(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
+    "m"
+  );
+
+  // 6) 単純にbasenameのみの場合
   // [^\w"'] とすることで文字列リテラル中の "foo" や 'foo' を誤検出しない
-  const r4 = new RegExp(
+  const r6 = new RegExp(
     `(^|[^\\w"'])(${baseName})([^\\w"']|$)`,
     "m"
   );
 
-  return [[r2, 1], [r1, 0], [r3, 1], [r4, 0]];
+  return isOperator && rOp
+    ? [[r2, 1], [r1, 0], [r3, 1], [rOp, 0], [r5, 1], [r6, 0]]
+    : [[r1, 0], [r2, 1], [r3, 1], [r5, 1], [r6, 0]];
 }
 
 /**
