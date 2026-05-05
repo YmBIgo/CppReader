@@ -4,6 +4,7 @@ import {
     getFileLineAndCharacterFromFunctionName
 } from "../core/lsp";
 import lidar_markser_localizer from "./stub/lsp/lidar_markser_localizer.json";
+import ndt_scan_matcher_core from "./stub/lsp/ndt_scan_matcher_core.json";
 import path from "path";
 
 // please edit pathToYourDirectory when you want to test it.
@@ -20,8 +21,8 @@ suite('Extension LSP', () => {
             if (!currentFileContent.content) continue;
             const functionContent = await getFunctionContentFromLineAndCharacter(
                 stubFilePath,
-                currentFileContent.line,
-                currentFileContent.character
+                currentFileContent.queryLine,
+                currentFileContent.queryCharacter
             );
             assert.strictEqual(functionContent, currentFileContent.content);
             // console.log("PASSED : getFunctionContentFromLineAndCharacter @ ", currentFileContent.functionName);
@@ -58,6 +59,22 @@ suite('Extension LSP', () => {
             )
             assert.strictEqual(currentFileContent.queryLine, line);
             assert.strictEqual(currentFileContent.queryCharacter, character);
+            // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
+        }
+    });
+
+    // ndt_scan_matcher_core.cpp
+    test('getFileLineAndCharacterFromFunctionName ndt_scan_matcher_core.cpp', async() => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "ndt_scan_matcher_core.cpp");
+        for(let i = 0; i < ndt_scan_matcher_core.length; i++) {
+            const currentFileContent = ndt_scan_matcher_core[i];
+            const [line, character] = await getFileLineAndCharacterFromFunctionName(
+                stubFilePath,
+                currentFileContent.firstLine,
+                currentFileContent.functionName
+            )
+            assert.strictEqual(currentFileContent.line, line);
+            assert.strictEqual(currentFileContent.character, character);
             // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
         }
     });

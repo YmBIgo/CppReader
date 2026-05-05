@@ -1,7 +1,7 @@
 [
     {
-        "line": 180,
-        "character": 27,
+        "line": 175,
+        "character": 2,
         "queryLine": 180,
         "queryCharacter": 0,
         "functionName": "LidarMarkerLocalizer::main_process",

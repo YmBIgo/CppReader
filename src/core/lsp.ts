@@ -322,12 +322,11 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
       `(^|[^\\w])(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
       "m"
     );
-    return [[rOp, 1], [r2, 1], [r1, 0], [r3, 1]];
   }
 
   // 5) foo->basename などのパターン（ただしメンバアクセスは除外したいので、前に . がある場合は後でスコアを下げる）
   const r5 = new RegExp(
-    `(^|[^\\w])([\\w:]+\\s*(\.|->)\\s*)(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
+    `(^|[^\\w])([\\w:]+\\s*->\\s*)(${baseName})(\\s*<[^;\\n{]*>|\\(|->|\.)`,
     "m"
   );
 
@@ -428,10 +427,10 @@ export async function getFileLineAndCharacterFromFunctionName(
       }
 
       // 定義っぽさスコア：近傍に '{' があるなら強い
-      const near = lines.slice(i, i + 15).join("\n");
+      // const near = lines.slice(i, i + 15).join("\n");
       let score = 0;
-      if (near.includes("{")) score += 10;
-      if (/;\s*$/.test(row)) score -= 5; // 宣言っぽい
+      // if (near.includes("{")) score += 10;
+      // if (/;\s*$/.test(row)) score -= 5; // 宣言っぽい
       if (/\b(class|struct|namespace|enum)\b/.test(row) && row.includes("{")) score -= 8;
 
       candidates.push({ line: i, ch: Math.max(0, idx), score });
@@ -445,6 +444,7 @@ export async function getFileLineAndCharacterFromFunctionName(
   if (candidates.length === 0) return [-1, -1];
 
   // 一番「定義っぽい」候補を返す
+  console.log("candidates : ", candidates);
   candidates.sort((a, b) => b.score - a.score);
   return [candidates[0].line, candidates[0].ch];
 }
