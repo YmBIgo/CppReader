@@ -1020,9 +1020,9 @@ ${description.ask ? description.ask : "not provided..."}
           console.log("reference items : ", itemUrls)
           // uniq filter itemUrls
           const uniqItemUrls = Array.from(new Set(itemUrls));
-          for (const url of uniqItemUrls) await new Promise<void>(async (_) => {
-            await this.jumpToCode(removeFilePrefixFromFilePath(url), "", true);
-          });
+          for (const url of uniqItemUrls) {
+            await this.jumpToCode(removeFilePrefixFromFilePath(url), "//");
+          };
           const fileContent = await getFunctionContentFromLineAndCharacter(
             removeFilePrefixFromFilePath(newFilePath2),
             newLine2,
