@@ -156,7 +156,7 @@ export class LinuxReader {
         `--compile-commands-dir=${compileCommand}`,
         "--background-index",
         "--log=verbose",
-        "--query-driver=/usr/bin/*,/bin/*,/usr/local/bin/*",
+        "--query-driver=/usr/bin/c++",
       ],
       options: {
         cwd: linuxPath,
