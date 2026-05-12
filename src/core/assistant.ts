@@ -603,9 +603,17 @@ ${stepActions}
     this.runTask(removeFilePrefixFromFilePath(newFile), newFunctionContent);
   }
 
-  private async jumpToCode(currentFilePath: string, functionContent: string, isCloseAfterJump: boolean = false) {
+  private async jumpToCode(currentFilePath: string, functionContent: string, isProbablyOpened: boolean = false) {
     console.log("Opening file", currentFilePath, functionContent.slice(0, 30));
     try {
+      // すでに開いているファイルの場合は、再度開かないようにする
+      if (isProbablyOpened) {
+        const openDocs = vscode.workspace.textDocuments;
+        const targetDoc = openDocs.find((od) => {
+          return addFilePrefixToFilePath(od.fileName) === addFilePrefixToFilePath(currentFilePath);
+        });
+        if (targetDoc) return;
+      }
       const openDoc = await vscode.workspace.openTextDocument(
         currentFilePath
       );
@@ -635,11 +643,6 @@ ${stepActions}
         )
       }
       // this.saySocket("\n\n----------\n" + functionContent + "\n----------\n\n");
-      if (isCloseAfterJump) {
-        await vscode.commands.executeCommand(
-          'workbench.action.closeActiveEditor'
-        );
-      }
     } catch (e) {
       console.warn(e);
     }
@@ -1001,7 +1004,8 @@ ${description.ask ? description.ask : "not provided..."}
               removeFilePrefixFromFilePath(newFilePath2),
               newLine2,
               newCharacter2
-            )
+            ),
+            true
           );
           let referenceItems =
             await this.doQueryReferenceClangd(
@@ -1021,14 +1025,14 @@ ${description.ask ? description.ask : "not provided..."}
           // uniq filter itemUrls
           const uniqItemUrls = Array.from(new Set(itemUrls));
           for (const url of uniqItemUrls) {
-            await this.jumpToCode(removeFilePrefixFromFilePath(url), "//");
+            await this.jumpToCode(removeFilePrefixFromFilePath(url), "//", true);
           };
           const fileContent = await getFunctionContentFromLineAndCharacter(
             removeFilePrefixFromFilePath(newFilePath2),
             newLine2,
             newCharacter2
           );
-          await this.jumpToCode(removeFilePrefixFromFilePath(newFilePath2), fileContent);
+          await this.jumpToCode(removeFilePrefixFromFilePath(newFilePath2), fileContent, true);
           new Promise((resolve) => setTimeout(resolve, 1000));
           isFirstHppJump = false;
         }

@@ -121,6 +121,10 @@ const SettingView: React.FC<SettingViewType> = ({
     ""
   );
   const [openAIModelList] = useState<string[]>([
+    "gpt-5.5",
+    "gpt-5.4",
+    "gpt-5.2",
+    "gpt-5.1",
     "gpt-5",
     "gpt-4.1",
     "gpt-4o",
