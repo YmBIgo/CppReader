@@ -77,6 +77,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.27
+
+.が間違って指定されるバグ修正
+
 #### 1.0.26
 
 hpp探索時にhppも指せるようにしたい

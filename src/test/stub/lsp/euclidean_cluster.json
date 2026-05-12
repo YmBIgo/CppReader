@@ -1,0 +1,7 @@
+[
+    {
+        "line": 79,
+        "character": 24,
+        "functionName": "pcl_euclidean_cluster.extract",
+        "firstLine": "  pcl_euclidean_cluster.extract(cluster_indices);"    }
+]

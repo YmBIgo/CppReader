@@ -277,7 +277,11 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
   // ありがちな入力揺れ対策：
   // - "foo(" を渡される
   // - "A::foo(" を渡される
-  const nameNoParen = name.endsWith("(") ? name.slice(0, -1) : name;
+  const nameNoParen = name.endsWith("(") ?
+    name.slice(0, -1) :
+    name.includes(".") ?
+    name.split(".").slice(-1)[0] :
+    name;
 
   // operator 系を雑に許容（operator<<, operator new, operator() など）
   const isOperator = nameNoParen.startsWith("operator");
@@ -304,7 +308,7 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
 
   // 2) メソッド定義: A::foo(
   const r2 = new RegExp(
-    `(^|[^\\w])([A-Za-z_][\\w:]\\s*[:]{0,2}\\s*)(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
+    `(^|[^\\w])([A-Za-z_][\\w:]\\s*[:]{2}\\s*)(${baseName})(\\s*<[^;\\n{]*>)?\\s*\\(`,
     "m"
   );
 
@@ -330,16 +334,22 @@ function buildCppFunctionSearchRegex(functionNameRaw: string): [RegExp, number][
     "m"
   );
 
-  // 6) 単純にbasenameのみの場合
-  // [^\w"'] とすることで文字列リテラル中の "foo" や 'foo' を誤検出しない
+  // 6) foo.bar.baz の baz 部分だけにマッチするパターン（ただしメンバアクセスは除外したいので、前に . がある場合は後でスコアを下げる）
   const r6 = new RegExp(
-    `(^|[^\\w"'])(${baseName})([^\\w"']|$)`,
+    `(^|[^\\w])([\\w:]+\\s*\\.\\s*)(${baseName}\\()(\\s*<[^;\\n{]*>|->|\.)`,
+    "m"
+  );
+
+  // 7) 単純にbasenameのみの場合
+  // [^\w"'] とすることで文字列リテラル中の "foo" や 'foo' を誤検出しない
+  const r7 = new RegExp(
+    `(^|[^\\w"'])(${baseName})($|\s*\\(|;$)`,
     "m"
   );
 
   return isOperator && rOp
-    ? [[r2, 1], [r1, 0], [r3, 1], [rOp, 0], [r5, 1], [r6, 0]]
-    : [[r1, 0], [r2, 1], [r3, 1], [r5, 1], [r6, 0]];
+    ? [[r2, 1], [r1, 0], [r3, 1], [rOp, 0], [r5, 1], [r6, 1], [r7, 0]]
+    : [[r1, 0], [r2, 1], [r3, 1], [r5, 1], [r6, 1], [r7, 0]];
 }
 
 /**
@@ -392,24 +402,23 @@ export async function getFileLineAndCharacterFromFunctionName(
     return [-1, -1];
   }
 
-  for (let i = 0; i < lines.length; i++) {
-    const row = lines[i];
-
-    // 先に状態更新しつつ、row の「有効コード部分」を取りたいが、
-    // ここでは簡便に「row 全体でマッチ→後でコメント/文字列中なら捨てる」ではなく
-    // brace scanner を流用して “状態だけ” を更新しつつ判定する。
-    // （厳密な位置判定は難しいので、行単位でコメント/文字列中ならスキップに寄せる）
-    // 行が完全に // コメントならスキップ
-    if (row.trimStart().startsWith("//")) continue;
-
-    // ブロックコメント中なら、終端が出るまでマッチさせない
-    if (state.inBlockComment || state.inRawString || state.inString || state.inChar) {
-      scanLineForBraces(row, state);
-      continue;
-    }
-
+  // 検索
+  for (const reg of regexes) {
     // 検索
-    for (const reg of regexes) {
+    for (let i = 0; i < lines.length; i++) {
+      const row = lines[i];
+      // 先に状態更新しつつ、row の「有効コード部分」を取りたいが、
+      // ここでは簡便に「row 全体でマッチ→後でコメント/文字列中なら捨てる」ではなく
+      // brace scanner を流用して “状態だけ” を更新しつつ判定する。
+      // （厳密な位置判定は難しいので、行単位でコメント/文字列中ならスキップに寄せる）
+      // 行が完全に // コメントならスキップ
+      if (row.trimStart().startsWith("//")) continue;
+
+      // ブロックコメント中なら、終端が出るまでマッチさせない
+      if (state.inBlockComment || state.inRawString || state.inString || state.inChar) {
+        scanLineForBraces(row, state);
+        continue;
+      }
       const r = reg[0] as RegExp;
       const regCount = reg[1] as number;
       const m = r.exec(row);
@@ -431,20 +440,17 @@ export async function getFileLineAndCharacterFromFunctionName(
       let score = 0;
       // if (near.includes("{")) score += 10;
       // if (/;\s*$/.test(row)) score -= 5; // 宣言っぽい
-      if (/\b(class|struct|namespace|enum)\b/.test(row) && row.includes("{")) score -= 8;
-
+      // if (/\b(class|struct|namespace|enum)\b/.test(row) && row.includes("{")) score -= 8;
       candidates.push({ line: i, ch: Math.max(0, idx), score });
+      // 状態更新（コメント/文字列検出）
+      scanLineForBraces(row, state);
       break;
     }
-
-    // 状態更新（コメント/文字列検出）
-    scanLineForBraces(row, state);
   }
 
   if (candidates.length === 0) return [-1, -1];
 
   // 一番「定義っぽい」候補を返す
   console.log("candidates : ", candidates);
-  candidates.sort((a, b) => b.score - a.score);
   return [candidates[0].line, candidates[0].ch];
 }

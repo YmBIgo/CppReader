@@ -5,6 +5,7 @@ import {
 } from "../core/lsp";
 import lidar_markser_localizer from "./stub/lsp/lidar_markser_localizer.json";
 import ndt_scan_matcher_core from "./stub/lsp/ndt_scan_matcher_core.json";
+import euclidean_cluster from "./stub/lsp/euclidean_cluster.json";
 import path from "path";
 
 // please edit pathToYourDirectory when you want to test it.
@@ -68,6 +69,22 @@ suite('Extension LSP', () => {
         const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "ndt_scan_matcher_core.cpp");
         for(let i = 0; i < ndt_scan_matcher_core.length; i++) {
             const currentFileContent = ndt_scan_matcher_core[i];
+            const [line, character] = await getFileLineAndCharacterFromFunctionName(
+                stubFilePath,
+                currentFileContent.firstLine,
+                currentFileContent.functionName
+            )
+            assert.strictEqual(currentFileContent.line, line);
+            assert.strictEqual(currentFileContent.character, character);
+            // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
+        }
+    });
+
+    // euclidean_cluster.cpp
+    test('getFileLineAndCharacterFromFunctionName euclidean_cluster.cpp', async() => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "euclidean_cluster.cpp");
+        for(let i = 0; i < euclidean_cluster.length; i++) {
+            const currentFileContent = euclidean_cluster[i];
             const [line, character] = await getFileLineAndCharacterFromFunctionName(
                 stubFilePath,
                 currentFileContent.firstLine,
