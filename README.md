@@ -1,7 +1,12 @@
 ## Cpp Reader とは？
 Cpp Reader とは、LLMと一緒にCppのコードを読むためのツールです。
 
-[\[LinuxReaderデモ\](https://youtu.be/jT_mHFuKsdQ)](https://youtu.be/jT_mHFuKsdQ)
+#### Important Update
+
+生成したJSONを可視化できる Playgroundを作成しました。
+よかったら使ってみて下さい！
+
+https://d1bn7mo12i1l5l.cloudfront.net/input
 
 :::note alert
 BuiltinでないC/C++のVSCode拡張とは共存できません。
@@ -76,6 +81,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 以上の流れを、自分がいいと思うまで続けます。
 
 ## Release Notes
+
+#### 1.0.28
+
+Update Doc
 
 #### 1.0.27
 
