@@ -1023,7 +1023,7 @@ ${description.ask ? description.ask : "not provided..."}
           const itemUrls = referenceItems.map((it) => it?.uri || "").filter(Boolean);
           console.log("reference items : ", itemUrls)
           // uniq filter itemUrls
-          const uniqItemUrls = Array.from(new Set(itemUrls));
+          const uniqItemUrls = Array.from(new Set(itemUrls)).slice(0, 20); // 最大20件までに制限
           for (const url of uniqItemUrls) {
             await this.jumpToCode(removeFilePrefixFromFilePath(url), "//", true);
           };
