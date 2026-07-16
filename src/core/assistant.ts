@@ -996,7 +996,7 @@ ${description.ask ? description.ask : "not provided..."}
     let isFirstHppJump = true;
 
     for (let i = 0; i < 4; i++) {
-      if (newFilePath2.endsWith(".hpp")) {
+      if (newFilePath2.endsWith(".hpp") || newFilePath2.endsWith(".h")) {
         if (isFirstHppJump) {
           await this.jumpToCode(
             removeFilePrefixFromFilePath(newFilePath2),
