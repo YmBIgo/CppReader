@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.30
+
+Support h file
+
 #### 1.0.29
 
 Support NVCC
