@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.32
+
+g++, gcc support
+
 #### 1.0.31
 
 Reference limit
