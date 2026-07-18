@@ -1,0 +1,8 @@
+[
+    {
+        "line": 61,
+        "character": 32,
+        "functionName": "grid_map::GridMapCvConverter::toImage<uint16_t, 1>",
+        "firstLine": "  grid_map::GridMapCvConverter::toImage<uint16_t, 1>("
+    }
+]

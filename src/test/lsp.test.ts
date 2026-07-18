@@ -6,6 +6,7 @@ import {
 import lidar_markser_localizer from "./stub/lsp/lidar_markser_localizer.json";
 import ndt_scan_matcher_core from "./stub/lsp/ndt_scan_matcher_core.json";
 import euclidean_cluster from "./stub/lsp/euclidean_cluster.json";
+import compare_elevation_map_filter_node from "./stub/lsp/compare_elevation_map_filter_node.json";
 import path from "path";
 
 // please edit pathToYourDirectory when you want to test it.
@@ -85,6 +86,22 @@ suite('Extension LSP', () => {
         const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "euclidean_cluster.cpp");
         for(let i = 0; i < euclidean_cluster.length; i++) {
             const currentFileContent = euclidean_cluster[i];
+            const [line, character] = await getFileLineAndCharacterFromFunctionName(
+                stubFilePath,
+                currentFileContent.firstLine,
+                currentFileContent.functionName
+            )
+            assert.strictEqual(currentFileContent.line, line);
+            assert.strictEqual(currentFileContent.character, character);
+            // console.log("PASSED : getFileLineAndCharacterFromFunctionName @ ", currentFileContent.functionName);
+        }
+    });
+
+    // compare_elevation_map_filter_node.cpp
+    test('getFileLineAndCharacterFromFunctionName compare_elevation_map_filter_node.cpp', async() => {
+        const stubFilePath = path.resolve(pathToYourDirectory, "src", "test", "stub", "lsp", "compare_elevation_map_filter_node.cpp");
+        for(let i = 0; i < compare_elevation_map_filter_node.length; i++) {
+            const currentFileContent = compare_elevation_map_filter_node[i];
             const [line, character] = await getFileLineAndCharacterFromFunctionName(
                 stubFilePath,
                 currentFileContent.firstLine,
