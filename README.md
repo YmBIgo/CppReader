@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.33
+
+/usr/local/cuda/bin/nvcc support
+
 #### 1.0.32
 
 g++, gcc support
