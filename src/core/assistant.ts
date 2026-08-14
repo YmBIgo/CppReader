@@ -575,6 +575,7 @@ ${stepActions}
         choicePosition: ChoicePosition[];
       }> = {};
       let cacheIndex = 0;
+      let sortedCacheSearchResults: {id: string; count: number;}[] = [];
       for(let cacheSearchResult of cacheSearchResults) {
         const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
         if (!searchResult || !searchResult.pos.length) {
@@ -589,7 +590,13 @@ ${stepActions}
         traverseTree(searchResult.choiceTree, (ct) => {
           count += ct.children.length;
         });
-        this.saySocket(`${cacheIndex} : ${cacheSearchResult} | ${count}個の子ノード`);
+        sortedCacheSearchResults.push({id: cacheSearchResult, count});
+      }
+      sortedCacheSearchResults.sort((a, b) => {
+        return b.count - a.count;
+      }).slice(0, 5);
+      for(let sortedCacheSearchResult of sortedCacheSearchResults) {
+        this.saySocket(`${cacheIndex} : ${sortedCacheSearchResult.id} | ${sortedCacheSearchResult.count}個の子ノード`);
         cacheIndex++;
       }
       for (; ;) {

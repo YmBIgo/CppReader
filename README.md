@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.36
+
+fix cache search display
+
 #### 1.0.35
 
 impl cache search
