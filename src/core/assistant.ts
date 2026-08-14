@@ -6,7 +6,7 @@ import {
   addFilePrefixToFilePath,
   removeFilePrefixFromFilePath,
 } from "./util/filepath";
-import { ChoiceTree, HistoryHandler, ProcessChoice } from "./history";
+import { ChoiceTree, HistoryHandler, ChoicePosition, ProcessChoice, traverseTree } from "./history";
 import { LLMModel } from "./llm/model";
 import { Message, MessageType } from "./type/Message";
 import {
@@ -25,6 +25,8 @@ import {
 } from "./prompt/index_ja";
 import pWaitFor from "p-wait-for";
 import { is7wordString } from "./util/number";
+import { NameCache } from "./util/nameCache";
+import { generateHexString } from "./util/rand";
 
 let client: ClangdLanguageClient | null;
 
@@ -64,6 +66,7 @@ export class LinuxReader {
   private rootFunctionName: string = "";
   private purpose: string = "";
   private linuxPath: string = "";
+  private nameCache: NameCache = NameCache.getInstance();
 
   private saySocket: (content: string) => void;
   private sendErrorSocket: (content: string) => void;
@@ -206,6 +209,7 @@ export class LinuxReader {
   ) {
     this.rootPath = currentFilePath;
     this.rootFunctionName = currentFunctionName;
+    this.nameCache.clearCache();
     const [currentLine, currentCharacter] =
       await getFileLineAndCharacterFromFunctionName(
         currentFilePath,
@@ -249,6 +253,7 @@ export class LinuxReader {
   ) {
     this.rootPath = currentFilePath;
     this.rootFunctionName = currentFunctionName;
+    this.nameCache.clearCache();
     const [currentLine, currentCharacter] =
       await getFileLineAndCharacterFromFunctionName(
         currentFilePath,
@@ -377,7 +382,7 @@ ${stepActions}
     // TODO : 正確な型をつける
     const fileContentArray = functionContent.split("\n");
     let newHistoryChoices: ProcessChoice[] = [];
-    let parsedContentCodeLineArray: string[] = [];
+    // let parsedContentCodeLineArray: string[] = [];
     let askQuestion = "";
     console.log(JSON.stringify(responseJSON));
     responseJSON.forEach((each_r, index) => {
@@ -462,7 +467,7 @@ ${stepActions}
             }
             return fcr.includes(each_r["name"]);
           }) ?? each_r["name"];
-      parsedContentCodeLineArray.push(fileCodeLine);
+      // parsedContentCodeLineArray.push(fileCodeLine);
       askQuestion += `${index} : ${each_r.name}\n`;
       askQuestion += `Details : ${each_r.description}\n`;
       askQuestion += `Whole Code Line : ${fileCodeLine}\n`;
@@ -482,7 +487,10 @@ ${stepActions}
     let resultNumber = 0;
     let result: AskResponse | null = null;
     const oldPosition = this.historyHanlder?.getCurrentChoicePosition();
-    this.historyHanlder?.addHistory(newHistoryChoices);
+    const newChildren = this.historyHanlder?.addHistory(newHistoryChoices);
+    for (let child of newChildren ?? []) {
+      this.nameCache.addName(child.content.functionName, child.content.id);
+    }
     if (oldPosition && oldPosition.length) {
       this.historyHanlder?.move(oldPosition);
     }
@@ -560,6 +568,83 @@ ${stepActions}
     this.saySocket(
       `Clangdは "${responseJSON[resultNumber].name}" を検索しています`
     );
+    const cacheSearchResults = this.nameCache.getNames(responseJSON[resultNumber].name);
+    if (cacheSearchResults && this.historyHanlder) {
+      let needPushSearchResult: Record<string, {
+        choiceTree: ChoiceTree;
+        choicePosition: ChoicePosition[];
+      }> = {};
+      let cacheIndex = 0;
+      for(let cacheSearchResult of cacheSearchResults) {
+        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
+        if (!searchResult || !searchResult.pos.length) {
+          console.log(`id not found for ${cacheSearchResult} ...`);
+          continue;
+        }
+        needPushSearchResult[cacheSearchResult] = {
+          choiceTree: searchResult.choiceTree,
+          choicePosition: searchResult.pos,
+        }
+        let count = 0;
+        traverseTree(searchResult.choiceTree, (ct) => {
+          count += ct.children.length;
+        });
+        this.saySocket(`${cacheIndex} : ${cacheSearchResult} | ${count}個の子ノード`);
+        cacheIndex++;
+      }
+      for (; ;) {
+        const cacheAsk = await this.askSocket(`キャッシュから検索結果を取得しますか？取得する場合はキャッシュのhex値を入力してください。\n通常検索する場合はsearchを入力してください。`);
+        if (cacheAsk.ask === "search") {
+          break;
+        }
+        if (needPushSearchResult[cacheAsk.ask]) {
+          const newHistoryChoices = structuredClone({
+            content: {
+              ...needPushSearchResult[cacheAsk.ask].choiceTree.content,
+              id: generateHexString(),
+            },
+            children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
+          });
+          traverseTree(newHistoryChoices, (ct) => {
+            ct.children = ct.children.map((c) => {
+              return {
+                ...c,
+                id: generateHexString(),
+              }
+            });
+          });
+          this.historyHanlder.searchTreeById(
+            this.historyHanlder.getChoiceTree(),
+            newHistoryChoices.content.id.slice(0, 7),
+            0,
+            0,
+            [{width: 0, depth: 0}],
+            (st) => {
+              st.children.push(newHistoryChoices);
+            }
+          )
+          this.saySocket(`キャッシュから検索結果を取得しました。`);
+          const historyTree = this.historyHanlder.showHistory();
+          if (historyTree) {
+            this.saySocket(historyTree);
+          }
+          for (; ;) {
+            const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
+            if (!is7wordString(historyAsk.ask)) {
+              this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
+              continue;
+            }
+            const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
+            if (isHistoryInteractive.ask === "yes") {
+              await this.runIntercativeHistoryPoint(historyAsk.ask);
+              return;
+            }
+            await this.runHistoryPoint(historyAsk.ask);
+            return;
+          }
+        }
+      }
+    }
     const [searchLine, searchCharacter] =
       await getFileLineAndCharacterFromFunctionName(
         currentFilePath,

@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.35
+
+impl cache search
+
 #### 1.0.34
 
 support gpt5.6

@@ -18,7 +18,7 @@ export type ChoiceTree = {
     content: Choice
     children: ChoiceTree[]
 }
-type ChoicePosition = {
+export type ChoicePosition = {
     depth: number;
     width: number;
 }
@@ -52,7 +52,7 @@ export class HistoryHandler {
     overWriteChoiceTree(choiceTree: ChoiceTree) {
         this.choiceTree = choiceTree;
     }
-    addHistory(choices: ProcessChoice[]) {
+    addHistory(choices: ProcessChoice[]): ChoiceTree[] | undefined {
         console.log("choice pos", this.currentChoicePosition);
         try {
             let currentTree = this.choiceTree;
@@ -78,6 +78,7 @@ export class HistoryHandler {
                 },
                 children: []
             }));
+            return currentTree.children;
         } catch (e) {
             console.error(e);
             return;
@@ -150,7 +151,7 @@ export class HistoryHandler {
     }
     searchTreeByIdPublic(
         id: string
-    ): {pos: ChoicePosition[], processChoice: Choice} | null {
+    ): {pos: ChoicePosition[], processChoice: Choice, choiceTree: ChoiceTree} | null {
         const searchResult = this.searchTreeById(this.choiceTree, id, 0, 0, []);
         if (!searchResult || !searchResult.pos.length) {
             console.log(`id not found for ${id} ...`);
@@ -165,11 +166,11 @@ export class HistoryHandler {
         width: number,
         searchPath: ChoicePosition[],
         foundCallback?: (st: ChoiceTree, comment: string) => void,
-    ): {pos: ChoicePosition[], processChoice: Choice} | null {
+    ): {pos: ChoicePosition[], processChoice: Choice, choiceTree: ChoiceTree} | null {
         const newSearchPath = [...searchPath, {depth, width}];
         const isSame = searchChoiceTree.content.id.slice(0, 7) === id;
         if (isSame) {
-            return {pos: newSearchPath, processChoice: searchChoiceTree.content};
+            return {pos: newSearchPath, processChoice: searchChoiceTree.content, choiceTree: searchChoiceTree};
         }
         let res = null;
         searchChoiceTree.children.forEach((st, index) => {
@@ -241,5 +242,12 @@ ${functionCode}
     }
     getCurrentChoicePosition() {
         return this.currentChoicePosition;
+    }
+}
+
+export function traverseTree(tree: ChoiceTree, callbackFn: (choiceTree: ChoiceTree) => void) {
+    callbackFn(tree);
+    for (let child of tree.children) {
+        traverseTree(child, callbackFn);
     }
 }
