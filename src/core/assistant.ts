@@ -23,7 +23,7 @@ import {
   reportPromopt,
   stepPrompt,
 } from "./prompt/index_ja";
-import pWaitFor from "p-wait-for";
+// import pWaitFor from "p-wait-for";
 import { is7wordString } from "./util/number";
 import { NameCache } from "./util/nameCache";
 import { generateHexString } from "./util/rand";
@@ -578,8 +578,8 @@ ${stepActions}
         choicePosition: ChoicePosition[];
       }> = {};
       let cacheIndex = 0;
-      let sortedCacheSearchResults: {id: string; count: number;}[] = [];
-      for(let cacheSearchResult of cacheSearchResults) {
+      let sortedCacheSearchResults: { id: string; count: number; }[] = [];
+      for (let cacheSearchResult of cacheSearchResults) {
         const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
         if (!searchResult || !searchResult.pos.length) {
           console.log(`id not found for ${cacheSearchResult} ...`);
@@ -593,64 +593,73 @@ ${stepActions}
         traverseTree(searchResult.choiceTree, (ct) => {
           count += ct.children.length;
         });
-        sortedCacheSearchResults.push({id: cacheSearchResult, count});
+        sortedCacheSearchResults.push({ id: cacheSearchResult, count });
       }
-      sortedCacheSearchResults.sort((a, b) => {
-        return b.count - a.count;
-      }).slice(0, 5);
-      for(let sortedCacheSearchResult of sortedCacheSearchResults) {
-        this.saySocket(`${cacheIndex} : ${sortedCacheSearchResult.id} | ${sortedCacheSearchResult.count}個の子ノード`);
-        cacheIndex++;
-      }
-      for (; ;) {
-        const cacheAsk = await this.askSocket(`キャッシュから検索結果を取得しますか？取得する場合はキャッシュのhex値を入力してください。\n通常検索する場合はsearchを入力してください。`);
-        if (cacheAsk.ask === "search") {
-          break;
+      sortedCacheSearchResults = sortedCacheSearchResults.filter((s) => {
+        return s.count > 0;
+      })
+        .sort((a, b) => {
+          return b.count - a.count;
+        }).slice(0, 5);
+      if (!sortedCacheSearchResults.length) {
+        this.saySocket(`キャッシュから検索結果は見つかりませんでした。`);
+      } else {
+        let cacheCandidateText = "◯キャッシュの候補\n----------------------------\n";
+        for (let sortedCacheSearchResult of sortedCacheSearchResults) {
+          cacheCandidateText += `${cacheIndex} : ${sortedCacheSearchResult.id} | ${sortedCacheSearchResult.count}個の子ノード\n`;
+          cacheIndex++;
         }
-        if (needPushSearchResult[cacheAsk.ask]) {
-          const newHistoryChoices = structuredClone({
-            content: {
-              ...needPushSearchResult[cacheAsk.ask].choiceTree.content,
-              id: generateHexString(),
-            },
-            children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
-          });
-          traverseTree(newHistoryChoices, (ct) => {
-            ct.children = ct.children.map((c) => {
-              return {
-                ...c,
-                id: generateHexString(),
-              }
-            });
-          });
-          this.historyHanlder.searchTreeById(
-            this.historyHanlder.getChoiceTree(),
-            newHistoryChoices.content.id.slice(0, 7),
-            0,
-            0,
-            [{width: 0, depth: 0}],
-            (st) => {
-              st.children.push(newHistoryChoices);
-            }
-          )
-          this.saySocket(`キャッシュから検索結果を取得しました。`);
-          const historyTree = this.historyHanlder.showHistory();
-          if (historyTree) {
-            this.saySocket(historyTree);
+        this.saySocket(cacheCandidateText);
+        for (; ;) {
+          const cacheAsk = await this.askSocket(`キャッシュから検索結果を取得しますか？取得する場合はキャッシュのhex値を入力してください。\n通常検索する場合はsearchを入力してください。`);
+          if (cacheAsk.ask === "search") {
+            break;
           }
-          for (; ;) {
-            const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
-            if (!is7wordString(historyAsk.ask)) {
-              this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
-              continue;
+          if (needPushSearchResult[cacheAsk.ask]) {
+            const newHistoryChoices = structuredClone({
+              content: {
+                ...needPushSearchResult[cacheAsk.ask].choiceTree.content,
+                id: generateHexString(),
+              },
+              children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
+            });
+            traverseTree(newHistoryChoices, (ct) => {
+              ct.children = ct.children.map((c) => {
+                return {
+                  ...c,
+                  id: generateHexString(),
+                }
+              });
+            });
+            this.historyHanlder.searchTreeById(
+              this.historyHanlder.getChoiceTree(),
+              newHistoryChoices.content.id.slice(0, 7),
+              0,
+              0,
+              [{ width: 0, depth: 0 }],
+              (st) => {
+                st.children.push(newHistoryChoices);
+              }
+            )
+            this.saySocket(`キャッシュから検索結果を取得しました。`);
+            const historyTree = this.historyHanlder.showHistory();
+            if (historyTree) {
+              this.saySocket(historyTree);
             }
-            const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
-            if (isHistoryInteractive.ask === "yes") {
-              await this.runIntercativeHistoryPoint(historyAsk.ask);
+            for (; ;) {
+              const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
+              if (!is7wordString(historyAsk.ask)) {
+                this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
+                continue;
+              }
+              const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
+              if (isHistoryInteractive.ask === "yes") {
+                await this.runIntercativeHistoryPoint(historyAsk.ask);
+                return;
+              }
+              await this.runHistoryPoint(historyAsk.ask);
               return;
             }
-            await this.runHistoryPoint(historyAsk.ask);
-            return;
           }
         }
       }
@@ -821,6 +830,104 @@ ${stepActions}
       return;
     }
     const { functionCodeContent, functionCodeLine, functionName, originalFilePath } = newRunConfig;
+
+    // cache search
+    const cacheSearchResults = this.nameCache.getNames(functionName);
+    if (cacheSearchResults && this.historyHanlder) {
+      this.saySocket(`キャッシュから検索結果を取得します...`);
+      let needPushSearchResult: Record<string, {
+        choiceTree: ChoiceTree;
+        choicePosition: ChoicePosition[];
+      }> = {};
+      let cacheIndex = 0;
+      let sortedCacheSearchResults: { id: string; count: number; }[] = [];
+      for (let cacheSearchResult of cacheSearchResults) {
+        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
+        if (!searchResult || !searchResult.pos.length) {
+          console.log(`id not found for ${cacheSearchResult} ...`);
+          continue;
+        }
+        needPushSearchResult[cacheSearchResult] = {
+          choiceTree: searchResult.choiceTree,
+          choicePosition: searchResult.pos,
+        }
+        let count = 0;
+        traverseTree(searchResult.choiceTree, (ct) => {
+          count += ct.children.length;
+        });
+        sortedCacheSearchResults.push({ id: cacheSearchResult, count });
+      }
+      sortedCacheSearchResults = sortedCacheSearchResults.filter((s) => {
+        return s.count > 0;
+      })
+        .sort((a, b) => {
+          return b.count - a.count;
+        }).slice(0, 5);
+      if (!sortedCacheSearchResults.length) {
+        this.saySocket(`キャッシュから検索結果は見つかりませんでした。`);
+      } else {
+        let cacheCandidateText = "◯キャッシュの候補\n----------------------------\n";
+        for (let sortedCacheSearchResult of sortedCacheSearchResults) {
+          cacheCandidateText += `${cacheIndex} : ${sortedCacheSearchResult.id} | ${sortedCacheSearchResult.count}個の子ノード\n`;
+          cacheIndex++;
+        }
+        this.saySocket(cacheCandidateText);
+        for (; ;) {
+          const cacheAsk = await this.askSocket(`キャッシュから検索結果を取得しますか？取得する場合はキャッシュのhex値を入力してください。\n通常検索する場合は「search」を入力してください。`);
+          if (cacheAsk.ask === "search") {
+            break;
+          }
+          if (needPushSearchResult[cacheAsk.ask]) {
+            const newHistoryChoices = structuredClone({
+              content: {
+                ...needPushSearchResult[cacheAsk.ask].choiceTree.content,
+                id: generateHexString(),
+              },
+              children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
+            });
+            traverseTree(newHistoryChoices, (ct) => {
+              ct.children = ct.children.map((c) => {
+                return {
+                  ...c,
+                  id: generateHexString(),
+                }
+              });
+            });
+            this.historyHanlder.searchTreeById(
+              this.historyHanlder.getChoiceTree(),
+              newHistoryChoices.content.id.slice(0, 7),
+              0,
+              0,
+              [{ width: 0, depth: 0 }],
+              (st) => {
+                st.children.push(newHistoryChoices);
+              }
+            )
+            this.saySocket(`キャッシュから検索結果を取得しました。`);
+            const historyTree = this.historyHanlder.showHistory();
+            if (historyTree) {
+              this.saySocket(historyTree);
+            }
+            for (; ;) {
+              const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
+              if (!is7wordString(historyAsk.ask)) {
+                this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
+                continue;
+              }
+              const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
+              if (isHistoryInteractive.ask === "yes") {
+                await this.runIntercativeHistoryPoint(historyAsk.ask);
+                return;
+              }
+              await this.runHistoryPoint(historyAsk.ask);
+              return;
+            }
+          }
+        }
+      }
+    }
+    this.saySocket(`検索履歴のハッシュ値 ${historyHash} の検索を開始します`);
+    // 通常の検索
     let functionResult = functionCodeContent;
     let filePath = originalFilePath;
     if (!functionCodeContent) {
