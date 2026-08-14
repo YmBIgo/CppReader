@@ -7,6 +7,7 @@ export type Choice = {
     id: string;
     functionCodeContent?: string;
     comment?: string;
+    steps?: string[];
 }
 export type ProcessChoice = {
     functionName: string;

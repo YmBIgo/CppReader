@@ -233,6 +233,9 @@ export class LinuxReader {
       functionCodeContent,
     );
     this.historyHanlder.overWriteChoiceTree(choiceTree);
+    traverseTree(choiceTree, (ct) => {
+      this.nameCache.addName(ct.content.functionName, ct.content.id);
+    });
     const historyTree = this.historyHanlder.showHistory();
     if (historyTree) {
       this.saySocket(historyTree);
