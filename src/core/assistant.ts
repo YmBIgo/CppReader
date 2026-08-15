@@ -492,6 +492,7 @@ ${stepActions}
     const oldPosition = this.historyHanlder?.getCurrentChoicePosition();
     const newChildren = this.historyHanlder?.addHistory(newHistoryChoices);
     for (let child of newChildren ?? []) {
+      console.log(`add name cache for ${child.content.functionName} with id ${child.content.id}`);
       this.nameCache.addName(child.content.functionName, child.content.id);
     }
     if (oldPosition && oldPosition.length) {

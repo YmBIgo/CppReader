@@ -25,7 +25,7 @@ export class NameCache {
     if (existingNames) {
       existingNames.push(names);
     }
-    this.cache.set(key, existingNames || []);
+    this.cache.set(key, Array.from(new Set(existingNames)) || []);
   }
   public clearCache(): void {
     this.cache.clear();
