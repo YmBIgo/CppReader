@@ -585,6 +585,7 @@ ${stepActions}
           console.log(`id not found for ${cacheSearchResult} ...`);
           continue;
         }
+        console.log(`id found for ${cacheSearchResult} ...`);
         needPushSearchResult[cacheSearchResult] = {
           choiceTree: searchResult.choiceTree,
           choicePosition: searchResult.pos,
@@ -593,6 +594,7 @@ ${stepActions}
         traverseTree(searchResult.choiceTree, (ct) => {
           count += ct.children.length;
         });
+        console.log(`id ${cacheSearchResult} has ${count} children ...`);
         sortedCacheSearchResults.push({ id: cacheSearchResult, count });
       }
       sortedCacheSearchResults = sortedCacheSearchResults.filter((s) => {
@@ -847,6 +849,7 @@ ${stepActions}
           console.log(`id not found for ${cacheSearchResult} ...`);
           continue;
         }
+        console.log(`id found for ${cacheSearchResult} ...`);
         needPushSearchResult[cacheSearchResult] = {
           choiceTree: searchResult.choiceTree,
           choicePosition: searchResult.pos,
@@ -855,6 +858,7 @@ ${stepActions}
         traverseTree(searchResult.choiceTree, (ct) => {
           count += ct.children.length;
         });
+        console.log(`id ${cacheSearchResult} has ${count} children ...`);
         sortedCacheSearchResults.push({ id: cacheSearchResult, count });
       }
       sortedCacheSearchResults = sortedCacheSearchResults.filter((s) => {
