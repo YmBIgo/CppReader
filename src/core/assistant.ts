@@ -605,6 +605,7 @@ ${stepActions}
         }).slice(0, 5);
       if (!sortedCacheSearchResults.length) {
         this.saySocket(`キャッシュから検索結果は見つかりませんでした。`);
+        this.saySocket(`通常検索を続けます...`);
       } else {
         let cacheCandidateText = "◯キャッシュの候補\n----------------------------\n";
         for (let sortedCacheSearchResult of sortedCacheSearchResults) {
@@ -638,7 +639,7 @@ ${stepActions}
               newHistoryChoices.content.id.slice(0, 7),
               0,
               0,
-              [{ width: 0, depth: 0 }],
+              [],
               (st) => {
                 st.children.push(newHistoryChoices);
               }
@@ -902,7 +903,7 @@ ${stepActions}
               newHistoryChoices.content.id.slice(0, 7),
               0,
               0,
-              [{ width: 0, depth: 0 }],
+              [],
               (st) => {
                 st.children.push(newHistoryChoices);
               }
