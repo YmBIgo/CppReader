@@ -4,6 +4,10 @@ All notable changes to the "linux-reader" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.42
+
+- fix id generation 
+
 ## 1.0.41
 
 - improve log at normal search cache add

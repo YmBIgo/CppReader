@@ -72,13 +72,15 @@ export class HistoryHandler {
                 currentTree = newCurrentTree;
                 currentIndex += 1;
             }
-            currentTree.children = choices.map((c) => ({
+            currentTree.children = choices.map((c) => {
+                const newId = generateHexString();
+                return {
                 content: {
                     ...c,
-                    id: generateHexString(),
+                    id: newId,
                 },
                 children: []
-            }));
+            }});
             return currentTree.children;
         } catch (e) {
             console.error(e);
