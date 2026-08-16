@@ -494,6 +494,11 @@ ${stepActions}
     if (oldPosition && oldPosition.length) {
       this.historyHanlder?.move(oldPosition);
     }
+    this.historyHanlder?.searchByChoicePositionArray((ct) => {
+      ct.content.steps = stepResponseJson.map((s) => {
+        return `${s.step} : ${s.action}\n${s.details}`;
+      });
+    });
     this.saySocket(`${askQuestion}`);
     for (; ;) {
       result = await this.askSocket(`
