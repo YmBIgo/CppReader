@@ -631,9 +631,10 @@ ${stepActions}
                 }
               });
             });
+            const updateChoiceTree = this.historyHanlder.searchByChoicePositionArray();
             const updateCache = this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
-              needPushSearchResult[cacheAsk.ask].choiceTree.content.id.slice(0, 7),
+              updateChoiceTree.content.id.slice(0, 7),
               0,
               0,
               []
@@ -835,7 +836,7 @@ ${stepActions}
       this.saveChoiceTree();
       return;
     }
-    const { functionCodeContent, functionCodeLine, functionName, originalFilePath } = newRunConfig;
+    const { functionCodeContent, functionCodeLine, functionName, originalFilePath, id } = newRunConfig;
 
     // cache search
     const cacheSearchResults = this.nameCache.getNames(functionName);
@@ -903,7 +904,7 @@ ${stepActions}
             });
             const updateCache = this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
-              needPushSearchResult[cacheAsk.ask].choiceTree.content.id.slice(0, 7),
+              id.slice(0, 7),
               0,
               0,
               []

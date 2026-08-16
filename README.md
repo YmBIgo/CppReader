@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.48
+
+fix id bug
+
 #### 1.0.47
 
 add runHistory update

@@ -106,7 +106,7 @@ export class HistoryHandler {
             choiceTree.content.comment = comment;
         });
     }
-    private searchByChoicePositionArray(callbackFn?: (choiceTree: ChoiceTree) => void) {
+    public searchByChoicePositionArray(callbackFn?: (choiceTree: ChoiceTree) => void) {
         let currentTree = this.choiceTree;
         let currentDepth = 0;
         for(let choicePosition of this.currentChoicePosition) {
