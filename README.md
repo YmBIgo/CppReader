@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.49
+
+fix normal task cache update bug
+
 #### 1.0.48
 
 fix id bug

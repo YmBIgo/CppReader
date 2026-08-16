@@ -631,37 +631,42 @@ ${stepActions}
                 }
               });
             });
-            const updateChoiceTree = this.historyHanlder.searchByChoicePositionArray();
-            const updateCache = this.historyHanlder.searchTreeById(
-              this.historyHanlder.getChoiceTree(),
-              updateChoiceTree.content.id.slice(0, 7),
-              0,
-              0,
-              []
-            );
-            this.historyHanlder.isFirstSearchFound = true;
-            if (updateCache) {
-              updateCache.choiceTree.content = newHistoryChoices.content;
-              updateCache.choiceTree.children = newHistoryChoices.children;
-            }
-            this.saySocket(`キャッシュから検索結果を取得しました。`);
-            const historyTree = this.historyHanlder.showHistory();
-            if (historyTree) {
-              this.saySocket(historyTree);
-            }
-            for (; ;) {
-              const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
-              if (!is7wordString(historyAsk.ask)) {
-                this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
-                continue;
+            const updateRootChoiceTree = this.historyHanlder.searchByChoicePositionArray();
+            const updateChoiceTree = updateRootChoiceTree.children.find((c) => {
+              return c.content.functionName === responseJSON[resultNumber].name;
+            });
+            if (updateChoiceTree) {
+              const updateCache = this.historyHanlder.searchTreeById(
+                this.historyHanlder.getChoiceTree(),
+                updateChoiceTree.content.id.slice(0, 7),
+                0,
+                0,
+                []
+              );
+              this.historyHanlder.isFirstSearchFound = true;
+              if (updateCache) {
+                updateCache.choiceTree.content = newHistoryChoices.content;
+                updateCache.choiceTree.children = newHistoryChoices.children;
               }
-              const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
-              if (isHistoryInteractive.ask === "yes") {
-                await this.runIntercativeHistoryPoint(historyAsk.ask);
+              this.saySocket(`キャッシュから検索結果を取得しました。`);
+              const historyTree = this.historyHanlder.showHistory();
+              if (historyTree) {
+                this.saySocket(historyTree);
+              }
+              for (; ;) {
+                const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
+                if (!is7wordString(historyAsk.ask)) {
+                  this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
+                  continue;
+                }
+                const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
+                if (isHistoryInteractive.ask === "yes") {
+                  await this.runIntercativeHistoryPoint(historyAsk.ask);
+                  return;
+                }
+                await this.runHistoryPoint(historyAsk.ask);
                 return;
               }
-              await this.runHistoryPoint(historyAsk.ask);
-              return;
             }
           }
         }
