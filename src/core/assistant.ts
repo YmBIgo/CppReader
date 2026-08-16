@@ -631,17 +631,18 @@ ${stepActions}
                 }
               });
             });
-            this.historyHanlder.searchTreeById(
+            const updateCache = this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
               needPushSearchResult[cacheAsk.ask].choiceTree.content.id.slice(0, 7),
               0,
               0,
-              [],
-              (st) => {
-                st.content = newHistoryChoices.content;
-                st.children = newHistoryChoices.children;
-              }
-            )
+              []
+            );
+            this.historyHanlder.isFirstSearchFound = true;
+            if (updateCache) {
+              updateCache.choiceTree.content = newHistoryChoices.content;
+              updateCache.choiceTree.children = newHistoryChoices.children;
+            }
             this.saySocket(`キャッシュから検索結果を取得しました。`);
             const historyTree = this.historyHanlder.showHistory();
             if (historyTree) {
