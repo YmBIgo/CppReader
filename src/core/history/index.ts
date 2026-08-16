@@ -32,7 +32,7 @@ export class HistoryHandler {
     private currentChoicePosition: ChoicePosition[];
     private visualizeResult: string;
     // 並列を気にしなければならなくなったら、isFirstSearchFoundを修正する 
-    private isFirstSearchFound: boolean;
+    public isFirstSearchFound: boolean;
     constructor(rootPath: string, rootFunctionName: string, rootFunctionCodeLine: string, rootFunctionContent: string) {
         this.rootPath = rootPath;
         const rootChoice: Choice = {
