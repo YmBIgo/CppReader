@@ -638,7 +638,8 @@ ${stepActions}
               0,
               [],
               (st) => {
-                st.children.push(newHistoryChoices);
+                st.content = newHistoryChoices.content;
+                st.children = newHistoryChoices.children;
               }
             )
             this.saySocket(`キャッシュから検索結果を取得しました。`);
@@ -906,7 +907,8 @@ ${stepActions}
               0,
               [],
               (st) => {
-                st.children.push(newHistoryChoices);
+                st.content = newHistoryChoices.content;
+                st.children = newHistoryChoices.children;
               }
             )
             this.saySocket(`キャッシュから検索結果を取得しました。`);
