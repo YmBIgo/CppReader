@@ -72,7 +72,7 @@ export class HistoryHandler {
                 currentTree = newCurrentTree;
                 currentIndex += 1;
             }
-            currentTree.children = choices.map((c) => {
+            const newChildren = choices.map((c) => {
                 const newId = generateHexString();
                 return {
                 content: {
@@ -81,7 +81,8 @@ export class HistoryHandler {
                 },
                 children: []
             }});
-            return currentTree.children;
+            currentTree.children = newChildren;
+            return newChildren;
         } catch (e) {
             console.error(e);
             return;

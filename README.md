@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.43
+
+fix children insertion
+
 #### 1.0.42
 
 fix id generation 
