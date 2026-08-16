@@ -490,11 +490,7 @@ ${stepActions}
     let resultNumber = 0;
     let result: AskResponse | null = null;
     const oldPosition = this.historyHanlder?.getCurrentChoicePosition();
-    const newChildren = this.historyHanlder?.addHistory(newHistoryChoices);
-    for (let child of newChildren ?? []) {
-      console.log(`add name cache for ${child.content.functionName} with id ${child.content.id}`);
-      this.nameCache.addName(child.content.functionName, child.content.id);
-    }
+    this.historyHanlder?.addHistory(newHistoryChoices); // 本当に必要か不明
     if (oldPosition && oldPosition.length) {
       this.historyHanlder?.move(oldPosition);
     }
@@ -637,7 +633,7 @@ ${stepActions}
             });
             this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
-              newHistoryChoices.content.id.slice(0, 7),
+              needPushSearchResult[cacheAsk.ask].choiceTree.content.id.slice(0, 7),
               0,
               0,
               [],
@@ -698,7 +694,11 @@ ${stepActions}
       return hc
     })
     // historyのパスは検索後に確定する
-    this.historyHanlder?.addHistory(newHistoryChoices);
+    const newChildren = this.historyHanlder?.addHistory(newHistoryChoices);
+    for (let child of newChildren ?? []) {
+      console.log(`add name cache for ${child.content.functionName} with id ${child.content.id}`);
+      this.nameCache.addName(child.content.functionName, child.content.id);
+    }
     this.jumpToCode(removeFilePrefixFromFilePath(newFile), newFunctionContent);
     this.historyHanlder?.choose(
       resultNumber,
@@ -901,7 +901,7 @@ ${stepActions}
             });
             this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
-              newHistoryChoices.content.id.slice(0, 7),
+              needPushSearchResult[cacheAsk.ask].choiceTree.content.id.slice(0, 7),
               0,
               0,
               [],
