@@ -629,12 +629,9 @@ ${stepActions}
               children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
             });
             traverseTree(newHistoryChoices, (ct) => {
-              ct.children = ct.children.map((c) => {
-                return {
-                  ...c,
-                  id: generateHexString(),
-                }
-              });
+              const newId = generateHexString();
+              console.log(`update id for ${ct.content.functionName} from ${ct.content.id} to ${newId}`);
+              ct.content.id = newId;
             });
             const updateRootChoiceTree = this.historyHanlder.searchByChoicePositionArray();
             const updateChoiceTree = updateRootChoiceTree.children.find((c) => {
@@ -905,12 +902,9 @@ ${stepActions}
               children: needPushSearchResult[cacheAsk.ask].choiceTree.children,
             });
             traverseTree(newHistoryChoices, (ct) => {
-              ct.children = ct.children.map((c) => {
-                return {
-                  ...c,
-                  id: generateHexString(),
-                }
-              });
+              const newId = generateHexString();
+              console.log(`update id for ${ct.content.functionName} from ${ct.content.id} to ${newId}`);
+              ct.content.id = newId;
             });
             const updateCache = this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
