@@ -655,6 +655,7 @@ ${stepActions}
               if (historyTree) {
                 this.saySocket(historyTree);
               }
+              this.saveChoiceTree();
               for (; ;) {
                 const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
                 if (!is7wordString(historyAsk.ask)) {
@@ -923,6 +924,7 @@ ${stepActions}
             if (historyTree) {
               this.saySocket(historyTree);
             }
+            this.saveChoiceTree();
             for (; ;) {
               const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
               if (!is7wordString(historyAsk.ask)) {
