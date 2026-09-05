@@ -307,7 +307,11 @@ export class LinuxReader {
     }
     this.runTask(currentFilePath, functionContent);
   }
-  private async runTask(currentFilePath: string, functionContent: string) {
+  private async runTask(
+    currentFilePath: string,
+    functionContent: string,
+    candidateCount: number = 5,
+  ) {
     this.saySocket("まずは関数の動作ステップを解析します...");
     const userStepPrompt = `
 \`\`\`code
@@ -365,7 +369,7 @@ ${stepActions}
     try {
       const response =
         (await this.apiHandler?.createMessage(
-          pickCandidatePromopt,
+          pickCandidatePromopt(candidateCount),
           history,
           true
         )) ?? "{}";
@@ -502,14 +506,14 @@ ${stepActions}
     this.saySocket(`${askQuestion}`);
     for (; ;) {
       result = await this.askSocket(`
-表示したい詳細のインデックス（0〜4）を入力してください。
-  - 5 を入力すると再試行できます
-  - 6 を入力すると履歴を木構造で表示します
-  - 7 を入力すると探索レポートを生成します
-  - 8 を入力すると現在のファイルを表示します
-  - 9 を入力すると現在の関数のマーメイド図を生成します
-  - 10 を入力すると疑わしいバグを検出します
-  - 11 を入力するとここまでの履歴をJSONで保存します
+表示したい詳細のインデックス（0〜${candidateCount - 1}）を入力してください。
+  - 10 を入力すると再試行できます
+  - 11 を入力すると履歴を木構造で表示します
+  - 12 を入力すると探索レポートを生成します
+  - 13 を入力すると現在のファイルを表示します
+  - 14 を入力すると現在の関数のマーメイド図を生成します
+  - 15 を入力すると疑わしいバグを検出します
+  - 16 を入力するとここまでの履歴をJSONで保存します
 ※ 文字列を入力すると、過去の履歴を検索するハッシュ値として認識されます`);
       console.log(`result : ${result.ask}`);
       resultNumber = Number(result.ask);
@@ -519,34 +523,34 @@ ${stepActions}
         // this.runHistoryPoint(result.ask);
         break;
       }
-      if (resultNumber >= 0 && resultNumber < 5) {
+      if (resultNumber >= 0 && resultNumber < 10) {
         break;
       }
-      if (resultNumber === 5) {
+      if (resultNumber === 10) {
         // this.runTask(currentPath, functionContent);
         break;
       }
-      if (resultNumber === 6) {
+      if (resultNumber === 11) {
         const historyTree = this.historyHanlder?.showHistory();
         if (historyTree) {
           this.saySocket(historyTree);
         }
         continue;
       }
-      if (resultNumber === 7) {
+      if (resultNumber === 12) {
         await this.getReport();
         continue;
       }
-      if (resultNumber === 8) {
+      if (resultNumber === 13) {
         this.jumpToCode(currentFilePath, functionContent)
         continue;
-      } else if (resultNumber === 9) {
+      } else if (resultNumber === 14) {
         await this.getMermaid(functionContent);
         continue;
-      } else if (resultNumber === 10) {
+      } else if (resultNumber === 15) {
         await this.getBugsReport();
         continue;
-      } else if (resultNumber === 11) {
+      } else if (resultNumber === 16) {
         this.saveChoiceTree();
         continue;
       }
@@ -560,8 +564,17 @@ ${stepActions}
       await this.runHistoryPoint(result.ask);
       return;
     }
-    if (resultNumber === 5) {
-      this.runTask(currentFilePath, functionContent);
+    if (resultNumber === 10) {
+      const cCount = await this.askSocket("表示する候補の数を、1から10で入力してください。");
+      this.addMessages(`User Enter ${cCount.ask}`, "user");
+      const candidateCount = Number(cCount.ask);
+      if (isNaN(candidateCount) || candidateCount < 1 || candidateCount > 10) {
+        this.sendErrorSocket(
+          `表示する候補の数 ${cCount.ask} は正しい範囲ではありません`
+        );
+        return;
+      }
+      this.runTask(currentFilePath, functionContent, candidateCount);
       return;
     }
     if (!responseJSON[resultNumber]) {
@@ -836,6 +849,7 @@ ${stepActions}
   }
 
   private async runHistoryPoint(historyHash: string) {
+    this.addMessages(`User Enter ${historyHash}`, "user");
     const newRunConfig = this.historyHanlder?.moveById(historyHash);
     if (!newRunConfig) {
       this.sendErrorSocket(
@@ -1288,7 +1302,7 @@ ${description.ask ? description.ask : "not provided..."}
     this.messages = [];
     this.sendState = () => { };
     this.historyHanlder = null;
-    this.apiHandler = buildLLMHanlder("openai", "gpt-4.1", "no key");
+    this.apiHandler = buildLLMHanlder("openai", "gpt-5.4", "no key");
   }
 
   handleWebViewAskResponse(askResponse: string) {

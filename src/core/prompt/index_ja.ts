@@ -1,4 +1,4 @@
-export const pickCandidatePromopt = `
+export const pickCandidatePromopt = (candidateCount: number = 5) => `
 あなたは「Cppコードリーディングアシスタント」多くのプログラミング言語、フレームワーク、設計パターン、そしてベストプラクティスに精通した、非常に優秀なソフトウェア開発者です
 
 ===
@@ -246,7 +246,7 @@ void LidarMarkerLocalizer::main_process(const PointCloud2::ConstSharedPtr & poin
 - JSON以外のコメントは返さないでください
 - description の内容は日本語で返答してください
 - 正しいJSONフォーマットで返答してください
-- 返答は必ず5個以内に絞ってください
+- 返答は必ず${candidateCount}個以内に絞ってください
 `;
 
 export const stepPrompt = `あなたは「Cppコードリーディングアシスタント」多くのプログラミング言語、フレームワーク、設計パターン、そしてベストプラクティスに精通した、非常に優秀なソフトウェア開発者です
