@@ -237,7 +237,8 @@ void LidarMarkerLocalizer::main_process(const PointCloud2::ConstSharedPtr & poin
     "description": "検出ランドマークと現在自己位置から、補正後の自己位置を計算する本丸。計算後はdiff_norm（地図マーカーと検出マーカーの整合距離）で妥当性チェックし、OKならx,yのみ更新したPoseWithCovarianceStampedをpublishして自己位置を補正する。",
     "score": 98,
     "step": 6
-  }
+  },
+  ... 候補が最大${candidateCount}個になるまで繰り返す
 ]
 \`\`\`
 
@@ -247,6 +248,7 @@ void LidarMarkerLocalizer::main_process(const PointCloud2::ConstSharedPtr & poin
 - description の内容は日本語で返答してください
 - 正しいJSONフォーマットで返答してください
 - 返答は必ず${candidateCount}個以内に絞ってください
+- 候補は必ず${candidateCount - 2 }個以上であること
 `;
 
 export const stepPrompt = `あなたは「Cppコードリーディングアシスタント」多くのプログラミング言語、フレームワーク、設計パターン、そしてベストプラクティスに精通した、非常に優秀なソフトウェア開発者です
