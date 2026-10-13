@@ -24,7 +24,7 @@ import {
   stepPrompt,
 } from "./prompt/index_ja";
 // import pWaitFor from "p-wait-for";
-import { is7wordString } from "./util/number";
+import { is9wordString } from "./util/number";
 import { NameCache } from "./util/nameCache";
 import { generateHexString } from "./util/rand";
 
@@ -242,7 +242,7 @@ export class LinuxReader {
     }
     const question = "過去の履歴の中から検索したいハッシュ値を入力してください。末端のノードからは検索できません";
     const result = await this.askSocket(question);
-    if (is7wordString(result.ask)) {
+    if (is9wordString(result.ask)) {
       await this.runIntercativeHistoryPoint(result.ask);
       return;
     }
@@ -519,7 +519,7 @@ ${stepActions}
       resultNumber = Number(result.ask);
       const newMessages = this.addMessages(`User Enter ${result.ask}`, "user");
       this.sendState(newMessages);
-      if (isNaN(resultNumber) || is7wordString(result.ask)) {
+      if (isNaN(resultNumber) || is9wordString(result.ask)) {
         // this.runHistoryPoint(result.ask);
         break;
       }
@@ -555,7 +555,7 @@ ${stepActions}
         continue;
       }
     }
-    if (is7wordString(result.ask)) {
+    if (is9wordString(result.ask)) {
       const isHistoryInteractive = await this.askSocket("最初から順番に再現したい場合はyesを、該当箇所のみ見たい場合は任意の文字を入力してください");
       if (isHistoryInteractive.ask === "yes") {
         await this.runIntercativeHistoryPoint(result.ask);
@@ -595,7 +595,7 @@ ${stepActions}
       let cacheIndex = 0;
       let sortedCacheSearchResults: { id: string; count: number; }[] = [];
       for (let cacheSearchResult of cacheSearchResults) {
-        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
+        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 9));
         if (!searchResult || !searchResult.pos.length) {
           console.log(`id not found for ${cacheSearchResult} ...`);
           continue;
@@ -653,7 +653,7 @@ ${stepActions}
             if (updateChoiceTree) {
               const updateCache = this.historyHanlder.searchTreeById(
                 this.historyHanlder.getChoiceTree(),
-                updateChoiceTree.content.id.slice(0, 7),
+                updateChoiceTree.content.id.slice(0, 9),
                 0,
                 0,
                 []
@@ -671,7 +671,7 @@ ${stepActions}
               this.saveChoiceTree();
               for (; ;) {
                 const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
-                if (!is7wordString(historyAsk.ask)) {
+                if (!is9wordString(historyAsk.ask)) {
                   this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
                   continue;
                 }
@@ -826,7 +826,7 @@ ${stepActions}
         if (st.content.comment) comment = comment2;
         if (filePath !== originalFilePath) st.content.originalFilePath = filePath;
       }
-      this.historyHanlder?.moveById(id.slice(0, 7), foundCallback);
+      this.historyHanlder?.moveById(id.slice(0, 9), foundCallback);
       if (functionResult) {
         this.saySocket("選択されたコードにジャンプします ...")
         this.jumpToCode(filePath, functionResult);
@@ -871,7 +871,7 @@ ${stepActions}
       let cacheIndex = 0;
       let sortedCacheSearchResults: { id: string; count: number; }[] = [];
       for (let cacheSearchResult of cacheSearchResults) {
-        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 7));
+        const searchResult = this.historyHanlder.searchTreeByIdPublic(cacheSearchResult.slice(0, 9));
         if (!searchResult || !searchResult.pos.length) {
           console.log(`id not found for ${cacheSearchResult} ...`);
           continue;
@@ -923,7 +923,7 @@ ${stepActions}
             });
             const updateCache = this.historyHanlder.searchTreeById(
               this.historyHanlder.getChoiceTree(),
-              id.slice(0, 7),
+              id.slice(0, 9),
               0,
               0,
               []
@@ -941,7 +941,7 @@ ${stepActions}
             this.saveChoiceTree();
             for (; ;) {
               const historyAsk = await this.askSocket('履歴の木構造を表示しました。再度ハッシュ値を入力して検索を続けてください。');
-              if (!is7wordString(historyAsk.ask)) {
+              if (!is9wordString(historyAsk.ask)) {
                 this.saySocket(`ハッシュ値が正しくありません。再度ハッシュ値を入力してください。`);
                 continue;
               }

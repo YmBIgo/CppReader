@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.54
+
+impl 9 word search
+
 #### 1.0.53
 
 up rerun candidate limit

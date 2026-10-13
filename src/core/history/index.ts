@@ -172,7 +172,7 @@ export class HistoryHandler {
         foundCallback?: (st: ChoiceTree, comment: string) => void,
     ): {pos: ChoicePosition[], processChoice: Choice, choiceTree: ChoiceTree} | null {
         const newSearchPath = [...searchPath, {depth, width}];
-        const isSame = searchChoiceTree.content.id.slice(0, 7) === id;
+        const isSame = searchChoiceTree.content.id.slice(0, 9) === id;
         if (isSame) {
             return {pos: newSearchPath, processChoice: searchChoiceTree.content, choiceTree: searchChoiceTree};
         }
@@ -197,7 +197,7 @@ export class HistoryHandler {
     }
     private printTree(tree: ChoiceTree, prefix: string = "") {
         this.visualizeResult += `${prefix}|${tree.content.functionName}
-${prefix}|${tree.content.id.slice(0, 7)}${tree.content.comment ? `\n${prefix}  ${tree.content.comment.slice(0, 30)}...` : ""}
+${prefix}|${tree.content.id.slice(0, 9)}${tree.content.comment ? `\n${prefix}  ${tree.content.comment.slice(0, 30)}...` : ""}
 
 `;
         for (let child of tree.children) {
