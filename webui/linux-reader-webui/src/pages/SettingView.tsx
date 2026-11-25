@@ -121,6 +121,11 @@ const SettingView: React.FC<SettingViewType> = ({
     ""
   );
   const [openAIModelList] = useState<string[]>([
+    "gpt-6-astra",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra",
+    "gpt-6-sol",
+    "gpt-6-luna",
     "gpt-5.6-sol",
     "gpt-5.6-terra",
     "gpt-5.6-luna",
@@ -148,6 +153,17 @@ const SettingView: React.FC<SettingViewType> = ({
     Anthropic.Model | ""
   >("");
   const [anthropicModelList] = useState<string[]>([
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-fable-5",
+    "claude-opus-5",
+    "claude-opus-4-8",
+    "claude-opus-4-7",
+    "claude-opus-4-6",
+    "claude-opus-4-5-20251101",
+    "claude-sonnet-5",
+    "claude-sonnet-4-6",
     "claude-sonnet-4-5",
     "claude-haiku-4-5",
     "claude-opus-4-1",
@@ -165,6 +181,17 @@ const SettingView: React.FC<SettingViewType> = ({
   // gemini model name
   const [geminiModelName, setGeminiModelName] = useState<string>("");
   const [geminiModelList] = useState<string[]>([
+    "gemini-4-hydrogen",
+    "gemini-4-neon",
+    "gemini-4-argon",
+    "gemini-4-carbon",
+    "gemini-3.8-flash",
+    "gemini-3.8-live",
+    "gemini-3.8-live-extended-thinking",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
     "gemini-2.5-pro-preview-06-05",
     "gemini-2.5-flash-preview-05-20",
     "gemini-2.0-flash",

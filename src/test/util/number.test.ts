@@ -13,13 +13,13 @@ suite('Extension Utils Number', () => {
 		assert.strictEqual(true, is9wordString(length9Words));
     });
 	test('is9wordString hex check', () => {
-		const notHexAlphabetWords1 = "zaaaaaa";
-		const notHexAlphabetWords2 = "z000000";
-		const notHexJapaneseWords1 = "あaaaaaa";
-		const notHexJapaneseWords2 = "あ000000";
-		const hexAlphabetWords = "aaaaaaa";
-		const hexNumberWords = "1111111";
-		const hexWords = "abcdef9"
+		const notHexAlphabetWords1 = "zaaaaabba";
+		const notHexAlphabetWords2 = "z00000011";
+		const notHexJapaneseWords1 = "あaaaaaaaa";
+		const notHexJapaneseWords2 = "あ00000011";
+		const hexAlphabetWords = "aaaaaaaaa";
+		const hexNumberWords = "111111111";
+		const hexWords = "abcdef987"
 		assert.strictEqual(false, is9wordString(notHexAlphabetWords1));
 		assert.strictEqual(false, is9wordString(notHexAlphabetWords2));
 		assert.strictEqual(false, is9wordString(notHexJapaneseWords1));

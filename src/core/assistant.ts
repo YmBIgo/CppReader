@@ -507,13 +507,13 @@ ${stepActions}
     for (; ;) {
       result = await this.askSocket(`
 表示したい詳細のインデックス（0〜${candidateCount - 1}）を入力してください。
-  - 10 を入力すると再試行できます
-  - 11 を入力すると履歴を木構造で表示します
-  - 12 を入力すると探索レポートを生成します
-  - 13 を入力すると現在のファイルを表示します
-  - 14 を入力すると現在の関数のマーメイド図を生成します
-  - 15 を入力すると疑わしいバグを検出します
-  - 16 を入力するとここまでの履歴をJSONで保存します
+  - 20 を入力すると再試行できます
+  - 21 を入力すると履歴を木構造で表示します
+  - 22 を入力すると探索レポートを生成します
+  - 23 を入力すると現在のファイルを表示します
+  - 24 を入力すると現在の関数のマーメイド図を生成します
+  - 25 を入力すると疑わしいバグを検出します
+  - 26 を入力するとここまでの履歴をJSONで保存します
 ※ 文字列を入力すると、過去の履歴を検索するハッシュ値として認識されます`);
       console.log(`result : ${result.ask}`);
       resultNumber = Number(result.ask);
@@ -523,34 +523,34 @@ ${stepActions}
         // this.runHistoryPoint(result.ask);
         break;
       }
-      if (resultNumber >= 0 && resultNumber < 10) {
+      if (resultNumber >= 0 && resultNumber < 20) {
         break;
       }
-      if (resultNumber === 10) {
+      if (resultNumber === 20) {
         // this.runTask(currentPath, functionContent);
         break;
       }
-      if (resultNumber === 11) {
+      if (resultNumber === 21) {
         const historyTree = this.historyHanlder?.showHistory();
         if (historyTree) {
           this.saySocket(historyTree);
         }
         continue;
       }
-      if (resultNumber === 12) {
+      if (resultNumber === 22) {
         await this.getReport();
         continue;
       }
-      if (resultNumber === 13) {
+      if (resultNumber === 23) {
         this.jumpToCode(currentFilePath, functionContent)
         continue;
-      } else if (resultNumber === 14) {
+      } else if (resultNumber === 24) {
         await this.getMermaid(functionContent);
         continue;
-      } else if (resultNumber === 15) {
+      } else if (resultNumber === 25) {
         await this.getBugsReport();
         continue;
-      } else if (resultNumber === 16) {
+      } else if (resultNumber === 26) {
         this.saveChoiceTree();
         continue;
       }
@@ -564,11 +564,11 @@ ${stepActions}
       await this.runHistoryPoint(result.ask);
       return;
     }
-    if (resultNumber === 10) {
-      const cCount = await this.askSocket("表示する候補の数を、1から10で入力してください。");
+    if (resultNumber === 20) {
+      const cCount = await this.askSocket("表示する候補の数を、1から20で入力してください。");
       this.addMessages(`User Enter ${cCount.ask}`, "user");
       const candidateCount = Number(cCount.ask);
-      if (isNaN(candidateCount) || candidateCount < 1 || candidateCount > 10) {
+      if (isNaN(candidateCount) || candidateCount < 1 || candidateCount > 20) {
         this.sendErrorSocket(
           `表示する候補の数 ${cCount.ask} は正しい範囲ではありません`
         );
