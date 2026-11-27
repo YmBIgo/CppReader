@@ -82,6 +82,10 @@ clangdのパス、Cppのパス、compile_commands.json のディレクトリの�
 
 ## Release Notes
 
+#### 1.0.56
+
+fix heavy ChatView problem
+
 #### 1.0.55
 
 update model & allow upto 20 candidates to be searched

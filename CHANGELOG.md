@@ -4,6 +4,10 @@ All notable changes to the "linux-reader" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.56
+
+- fix heavy ChatView problem
+
 ## 1.0.55
 
 - update model & allow upto 20 candidates to be searched

@@ -322,7 +322,7 @@ const ChatView: React.FC<ChatViewType> = ({
             width: "310px",
           }}
         ></div>
-        {messages.map((message) =>
+        {messages.slice(-100).map((message) =>
           message.type === "ask" || message.type === "say" ? (
             <div
               style={{
